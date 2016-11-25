@@ -1,0 +1,39 @@
+{
+  "name": "react-native-qqsdk",
+  "version": "0.1.0",
+  "description": "react-native wrapper for qq sdk",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/iVanPan/Cordova_QQ.git"
+  },
+  "cordova": {
+    "id": "react-native-qqsdk",
+    "platforms": [
+      "android",
+      "ios"
+    ]
+  },
+  "keywords": [
+    "ecosystem:react-native",
+    "react",
+    "android",
+    "ios",
+    "plugin",
+    "qqsdk",
+    "qq",
+    "Tencent",
+    "login",
+    "share",
+    "favorites"
+  ],
+  "author": "https://github.com/iVanPan",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/iVanPan/Cordova_QQ/issues"
+  },
+  "homepage": "https://github.com/iVanPan/Cordova_QQ",
+}
