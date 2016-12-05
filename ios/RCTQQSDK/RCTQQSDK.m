@@ -16,35 +16,38 @@ NSString *QQ_LOGIN_NETWORK_ERROR = @"QQ login network error";
 NSString *QQ_SHARE_CANCEL = @"QQ share cancelled by user";
 NSString *QQ_OTHER_ERROR = @"other error happened";
 NSString *appId=@"";
-NSString *const RCTOpenURLNotification = @"RCTOpenURLNotification";
+typedef NS_ENUM(NSInteger, QQShareType) {
+    TextMessage,
+    ImageMesssage,
+    NewsMessageWithNetworkImage,
+    NewsMessageWithLocalImage,
+    AudioMessage,
+    VideoMessage,
+};
+typedef NS_ENUM(NSInteger, QQShareScene) {
+    QQ,
+    QQZONE,
+    Favrites,
+    DataLine,
+};
+@implementation RCTQQSDK {
+    TencentOAuth *tencentOAuth;
+    RCTPromiseResolveBlock loginResolve;
+    RCTPromiseRejectBlock loginReject;
+    RCTPromiseResolveBlock logoutResolve;
+    RCTPromiseRejectBlock logoutReject;
+}
 
-@implementation RCTQQSDK
-
-@synthesize bridge = _bridge;
-
-RCT_EXPORT_MODULE(RCTQQ);
+RCT_EXPORT_MODULE()
 
 - (instancetype)init {
     self = [super init];
     if (self) {
+        [self initTencentOAuth];
         [[NSNotificationCenter defaultCenter] addObserver:self
                                                  selector:@selector(handleOpenURLNotification:)
-                                                     name:RCTOpenURLNotification
+                                                     name:@"RCTOpenURLNotification"
                                                    object:nil];
-        NSArray *urlTypes = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleURLTypes"];
-        for (id type in urlTypes) {
-            NSArray *urlSchemes = [type objectForKey:@"CFBundleURLSchemes"];
-            for (id scheme in urlSchemes) {
-                if([scheme isKindOfClass:[NSString class]]) {
-                    NSString* value = (NSString*)scheme;
-                    if ([value hasPrefix:@"tencent"] && (nil == self.tencentOAuth)) {
-                        appId = [value substringFromIndex:7];
-                        self.tencentOAuth = [[TencentOAuth alloc] initWithAppId:appId andDelegate:self];
-                        break;
-                    }
-                }
-            }
-        }
     }
     return self;
 }
@@ -58,14 +61,81 @@ RCT_EXPORT_MODULE(RCTQQ);
         [TencentOAuth HandleOpenURL:url];
     }
 }
-
-- (NSArray<NSString *> *)supportedEvents {
-    return @[@"LoginResponse", @"ShareResponse", @"LoginOutResponse"];
+- (void)initTencentOAuth {
+    NSArray *urlTypes = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleURLTypes"];
+    for (id type in urlTypes) {
+        NSArray *urlSchemes = [type objectForKey:@"CFBundleURLSchemes"];
+        for (id scheme in urlSchemes) {
+            if([scheme isKindOfClass:[NSString class]]) {
+                NSString* value = (NSString*)scheme;
+                if ([value hasPrefix:@"tencent"] && (nil == tencentOAuth)) {
+                    appId = [value substringFromIndex:7];
+                    tencentOAuth = [[TencentOAuth alloc] initWithAppId: appId andDelegate: self];
+                    break;
+                }
+            }
+        }
+    }
+}
+- (void)shareObjectWithData:(NSDictionary *)shareData Type:(QQShareType)type Scene:(QQShareScene) scene{
+    switch (type) {
+        case TextMessage: {
+            QQApiTextObject* txtObj = [QQApiTextObject objectWithText:@"Test Text"];
+            SendMessageToQQReq* req = [SendMessageToQQReq reqWithContent:txtObj];
+            [QQApiInterface sendReq:req];
+        }
+            break;
+        case ImageMesssage:{
+            NSString *path = [[[NSBundle mainBundle] resourcePath] stringByAppendingPathComponent:@"img.jpg"];
+            NSData* data = [NSData dataWithContentsOfFile:path];
+            QQApiImageObject* imgObj = [QQApiImageObject objectWithData:data previewImageData:data title:@"" description:@""];
+            SendMessageToQQReq* req = [SendMessageToQQReq reqWithContent:imgObj];
+            [QQApiInterface sendReq:req];
+        }
+            break;
+        case NewsMessageWithLocalImage:{
+            NSString *path = [[[NSBundle mainBundle] resourcePath] stringByAppendingPathComponent:@"news.jpg"];
+            NSData* data = [NSData dataWithContentsOfFile:path];
+            NSURL* url = [NSURL URLWithString:@""];
+            
+            QQApiNewsObject* newsObj = [QQApiNewsObject objectWithURL:url title:@"" description:@"" previewImageData:data];
+            SendMessageToQQReq* req = [SendMessageToQQReq reqWithContent:newsObj];
+            [QQApiInterface sendReq:req];
+        }
+            break;
+        case NewsMessageWithNetworkImage:{
+            NSURL *previewURL = [NSURL URLWithString:@"http://img1.gtimg.com/sports/pics/hv1/87/16/1037/67435092.jpg"];
+            NSURL* url = [NSURL URLWithString:@""];
+            QQApiNewsObject* newsObj = [QQApiNewsObject objectWithURL:url title:@"" description:@"" previewImageURL:previewURL];
+            SendMessageToQQReq* req = [SendMessageToQQReq reqWithContent:newsObj];
+            [QQApiInterface sendReq:req];
+        }
+            break;
+        case AudioMessage:{
+            NSString *path = [[[NSBundle mainBundle] resourcePath] stringByAppendingPathComponent:@"audio.jpg"];
+            NSData* data = [NSData dataWithContentsOfFile:path];
+            NSURL* url = [NSURL URLWithString:@""];
+            QQApiAudioObject* audioObj = [QQApiAudioObject objectWithURL:url title:@"" description:@"" previewImageData:data];
+            SendMessageToQQReq* req = [SendMessageToQQReq reqWithContent:audioObj];
+            [QQApiInterface sendReq:req];
+        }
+            break;
+        case VideoMessage: {
+            
+        }
+            break;
+        default:
+            break;
+    }
+}
+- (dispatch_queue_t)methodQueue {
+    return dispatch_get_main_queue();
 }
 
-RCT_EXPORT_METHOD(checkClientInstalled:
-                 resolver:(RCTPromiseResolveBlock)resolve
-                 rejecter:(RCTPromiseRejectBlock)reject) {
+
+RCT_EXPORT_METHOD(checkClientInstalled
+                  :(RCTPromiseResolveBlock)resolve
+                  :(RCTPromiseRejectBlock)reject) {
     if ([TencentOAuth iphoneQQInstalled] && [TencentOAuth iphoneQQSupportSSOLogin]) {
         resolve(@YES);
     } else {
@@ -73,45 +143,47 @@ RCT_EXPORT_METHOD(checkClientInstalled:
     }
 }
 
-RCT_EXPORT_METHOD(ssoLogin: (BOOL)checkQQInstalled) {
-    if (checkQQInstalled) {
-        if ([TencentOAuth iphoneQQInstalled] && [TencentOAuth iphoneQQSupportSSOLogin]) {
-            [self qqLogin];
-        } else {
-            [self sendEventWithName:@"LoginResponse" body: @{@"error": QQ_NOT_INSTALLED}];
-        }
+RCT_EXPORT_METHOD(ssoLogin
+                  :(RCTPromiseResolveBlock)resolve
+                  :(RCTPromiseRejectBlock)reject) {
+    if(nil == tencentOAuth) {
+        [self initTencentOAuth];
+    }
+    if ([tencentOAuth isSessionValid]) {
+        NSDictionary *result = @{@"userid" : tencentOAuth.openId,
+                                 @"access_token" : tencentOAuth.accessToken,
+                                 @"expires_time" : [NSString stringWithFormat:@"%f",[tencentOAuth.expirationDate timeIntervalSince1970] * 1000]};
+        resolve(result);
     } else {
-        [self qqLogin];
+        loginResolve = resolve;
+        loginReject = reject;
+        NSArray *permissions = [NSArray arrayWithObjects:
+                                kOPEN_PERMISSION_GET_USER_INFO,
+                                kOPEN_PERMISSION_GET_SIMPLE_USER_INFO,
+                                kOPEN_PERMISSION_ADD_ALBUM,
+                                kOPEN_PERMISSION_ADD_ONE_BLOG,
+                                kOPEN_PERMISSION_ADD_SHARE,
+                                kOPEN_PERMISSION_ADD_TOPIC,
+                                kOPEN_PERMISSION_CHECK_PAGE_FANS,
+                                kOPEN_PERMISSION_GET_INFO,
+                                kOPEN_PERMISSION_GET_OTHER_INFO,
+                                kOPEN_PERMISSION_LIST_ALBUM,
+                                kOPEN_PERMISSION_UPLOAD_PIC,
+                                kOPEN_PERMISSION_GET_VIP_INFO,
+                                kOPEN_PERMISSION_GET_VIP_RICH_INFO,
+                                nil];
+
+        [tencentOAuth authorize: permissions];
+    
     }
 }
 
-RCT_EXPORT_METHOD(logout) {
-    [self.tencentOAuth logout:self];
-}
-
-- (void)qqLogin{
-    self.permissions = [NSArray arrayWithObjects:
-                        kOPEN_PERMISSION_GET_USER_INFO,
-                        kOPEN_PERMISSION_GET_SIMPLE_USER_INFO,
-                        kOPEN_PERMISSION_ADD_ALBUM,
-                        kOPEN_PERMISSION_ADD_ONE_BLOG,
-                        kOPEN_PERMISSION_ADD_SHARE,
-                        kOPEN_PERMISSION_ADD_TOPIC,
-                        kOPEN_PERMISSION_CHECK_PAGE_FANS,
-                        kOPEN_PERMISSION_GET_INFO,
-                        kOPEN_PERMISSION_GET_OTHER_INFO,
-                        kOPEN_PERMISSION_LIST_ALBUM,
-                        kOPEN_PERMISSION_UPLOAD_PIC,
-                        kOPEN_PERMISSION_GET_VIP_INFO,
-                        kOPEN_PERMISSION_GET_VIP_RICH_INFO,
-                        nil];
-    if (self.tencentOAuth.isSessionValid) {
-        [self sendEventWithName:@"LoginResponse" body:@{@"userid" : self.tencentOAuth.openId,
-                                                        @"access_token" : self.tencentOAuth.accessToken,
-                                                        @"expires_time" : [NSString stringWithFormat:@"%f",[self.tencentOAuth.expirationDate timeIntervalSince1970] * 1000]}];
-    } else {
-        [self.tencentOAuth authorize:self.permissions inSafari:NO];
-    }
+RCT_EXPORT_METHOD(logout
+                  :(RCTPromiseResolveBlock)resolve
+                  :(RCTPromiseRejectBlock)reject) {
+    logoutResolve = resolve;
+    logoutReject = reject;
+    [tencentOAuth logout: self];
 }
 
 #pragma mark - QQApiInterfaceDelegate
@@ -143,31 +215,51 @@ RCT_EXPORT_METHOD(logout) {
 
 #pragma mark - TencentSessionDelegate
 - (void)tencentDidLogin {
-    if (self.tencentOAuth.accessToken && 0 != [self.tencentOAuth.accessToken length]) {
-        [self sendEventWithName:@"LoginResponse" body:@{@"userid" : self.tencentOAuth.openId,
-                                                        @"access_token" : self.tencentOAuth.accessToken,
-                                                        @"expires_time" : [NSString stringWithFormat:@"%f",[self.tencentOAuth.expirationDate timeIntervalSince1970] * 1000]}];
+    if (tencentOAuth.accessToken && 0 != [tencentOAuth.accessToken length] && loginResolve) {
+        NSDictionary *result = @{@"userid" : tencentOAuth.openId,
+                                 @"access_token" : tencentOAuth.accessToken,
+                                 @"expires_time" : [NSString stringWithFormat:@"%f",[tencentOAuth.expirationDate timeIntervalSince1970] * 1000]};
+        loginResolve(result);
+        loginReject = nil;
     } else {
-        [self sendEventWithName:@"LoginResponse" body: @{@"error": QQ_LOGIN_ERROR}];
+        if(loginReject) {
+            loginReject(QQ_LOGIN_ERROR,QQ_LOGIN_ERROR,nil);
+            loginResolve = nil;
+            logoutReject = nil;
+        }
     }
 }
 
 - (void)tencentDidLogout {
-    [self sendEventWithName:@"LoginOutResponse" body: @{@"code": @"200"}];
+    if (logoutResolve) {
+        logoutResolve(@YES);
+        logoutReject = nil;
+    }
 }
 
 - (void)tencentDidNotLogin:(BOOL)cancelled {
-    if (cancelled) {
-        [self sendEventWithName:@"LogininResponse" body: @{@"error": QQ_LOGIN_CANCEL}];
+    if (cancelled && loginReject) {
+        loginReject(QQ_LOGIN_CANCEL,QQ_LOGIN_CANCEL,nil);
+        loginResolve = nil;
+        loginReject = nil;
     }
 }
 
 - (void)tencentDidNotNetWork {
-    [self sendEventWithName:@"LogininResponse" body: @{@"error": QQ_LOGIN_NETWORK_ERROR}];
+    NSLog(@"发生网络问题");
+    if (loginReject) {
+        loginReject(QQ_LOGIN_NETWORK_ERROR,QQ_LOGIN_NETWORK_ERROR,nil);
+        loginResolve = nil;
+        loginReject = nil;
+    }
 }
 
 - (void)dealloc {
     [[NSNotificationCenter defaultCenter] removeObserver:self];
+    loginResolve = nil;
+    loginReject = nil;
+    logoutResolve = nil;
+    logoutReject = nil;
 }
 
 @end

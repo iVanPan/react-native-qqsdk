@@ -7,119 +7,83 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		219487BD1DE6D412009FE82E /* RCTQQSDK.m in Sources */ = {isa = PBXBuildFile; fileRef = 219487BC1DE6D412009FE82E /* RCTQQSDK.m */; };
-		219487BE1DE6D412009FE82E /* RCTQQSDK.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 219487BB1DE6D412009FE82E /* RCTQQSDK.h */; };
-		219487D01DE6E0C3009FE82E /* TencentOpenAPI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 219487CF1DE6E0C3009FE82E /* TencentOpenAPI.framework */; };
-		219487D31DE6E135009FE82E /* TencentOpenApi_IOS_Bundle.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 219487D11DE6E0CF009FE82E /* TencentOpenApi_IOS_Bundle.bundle */; };
-		219487D61DE827BA009FE82E /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 219487D51DE827BA009FE82E /* CoreGraphics.framework */; };
-		219487D81DE827C5009FE82E /* CoreTelephony.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 219487D71DE827C5009FE82E /* CoreTelephony.framework */; };
-		219487DA1DE827D2009FE82E /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 219487D91DE827D2009FE82E /* SystemConfiguration.framework */; };
-		219487DC1DE827ED009FE82E /* libz.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 219487DB1DE827ED009FE82E /* libz.tbd */; };
-		219487DE1DE827F9009FE82E /* libstdc++.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 219487DD1DE827F9009FE82E /* libstdc++.tbd */; };
-		219487E01DE82804009FE82E /* libsqlite3.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 219487DF1DE82804009FE82E /* libsqlite3.tbd */; };
-		219487E21DE82814009FE82E /* libiconv.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 219487E11DE82814009FE82E /* libiconv.tbd */; };
+		219489041DED59BC009FE82E /* RCTQQSDK.m in Sources */ = {isa = PBXBuildFile; fileRef = 219489031DED59BC009FE82E /* RCTQQSDK.m */; };
+		219489051DED59BC009FE82E /* RCTQQSDK.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 219489021DED59BC009FE82E /* RCTQQSDK.h */; };
+		2194890D1DED5A33009FE82E /* TencentOpenAPI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2194890B1DED5A33009FE82E /* TencentOpenAPI.framework */; };
+		2194890F1DED5A5B009FE82E /* TencentOpenApi_IOS_Bundle.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 2194890C1DED5A33009FE82E /* TencentOpenApi_IOS_Bundle.bundle */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
-		219487B61DE6D412009FE82E /* CopyFiles */ = {
+		219488FD1DED59BC009FE82E /* CopyFiles */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
 			dstPath = "include/$(PRODUCT_NAME)";
 			dstSubfolderSpec = 16;
 			files = (
-				219487BE1DE6D412009FE82E /* RCTQQSDK.h in CopyFiles */,
+				219489051DED59BC009FE82E /* RCTQQSDK.h in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		219487B81DE6D412009FE82E /* libRCTQQSDK.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libRCTQQSDK.a; sourceTree = BUILT_PRODUCTS_DIR; };
-		219487BB1DE6D412009FE82E /* RCTQQSDK.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RCTQQSDK.h; sourceTree = "<group>"; };
-		219487BC1DE6D412009FE82E /* RCTQQSDK.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RCTQQSDK.m; sourceTree = "<group>"; };
-		219487CF1DE6E0C3009FE82E /* TencentOpenAPI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = TencentOpenAPI.framework; sourceTree = "<group>"; };
-		219487D11DE6E0CF009FE82E /* TencentOpenApi_IOS_Bundle.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = TencentOpenApi_IOS_Bundle.bundle; sourceTree = "<group>"; };
-		219487D51DE827BA009FE82E /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
-		219487D71DE827C5009FE82E /* CoreTelephony.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreTelephony.framework; path = System/Library/Frameworks/CoreTelephony.framework; sourceTree = SDKROOT; };
-		219487D91DE827D2009FE82E /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
-		219487DB1DE827ED009FE82E /* libz.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libz.tbd; path = usr/lib/libz.tbd; sourceTree = SDKROOT; };
-		219487DD1DE827F9009FE82E /* libstdc++.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = "libstdc++.tbd"; path = "usr/lib/libstdc++.tbd"; sourceTree = SDKROOT; };
-		219487DF1DE82804009FE82E /* libsqlite3.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libsqlite3.tbd; path = usr/lib/libsqlite3.tbd; sourceTree = SDKROOT; };
-		219487E11DE82814009FE82E /* libiconv.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libiconv.tbd; path = usr/lib/libiconv.tbd; sourceTree = SDKROOT; };
+		219488FF1DED59BC009FE82E /* libRCTQQSDK.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libRCTQQSDK.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		219489021DED59BC009FE82E /* RCTQQSDK.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RCTQQSDK.h; sourceTree = "<group>"; };
+		219489031DED59BC009FE82E /* RCTQQSDK.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RCTQQSDK.m; sourceTree = "<group>"; };
+		2194890B1DED5A33009FE82E /* TencentOpenAPI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = TencentOpenAPI.framework; sourceTree = "<group>"; };
+		2194890C1DED5A33009FE82E /* TencentOpenApi_IOS_Bundle.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = TencentOpenApi_IOS_Bundle.bundle; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
-		219487B51DE6D412009FE82E /* Frameworks */ = {
+		219488FC1DED59BC009FE82E /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				219487E21DE82814009FE82E /* libiconv.tbd in Frameworks */,
-				219487E01DE82804009FE82E /* libsqlite3.tbd in Frameworks */,
-				219487DE1DE827F9009FE82E /* libstdc++.tbd in Frameworks */,
-				219487DC1DE827ED009FE82E /* libz.tbd in Frameworks */,
-				219487DA1DE827D2009FE82E /* SystemConfiguration.framework in Frameworks */,
-				219487D81DE827C5009FE82E /* CoreTelephony.framework in Frameworks */,
-				219487D61DE827BA009FE82E /* CoreGraphics.framework in Frameworks */,
-				219487D01DE6E0C3009FE82E /* TencentOpenAPI.framework in Frameworks */,
+				2194890D1DED5A33009FE82E /* TencentOpenAPI.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		219487AF1DE6D412009FE82E = {
+		219488F61DED59BC009FE82E = {
 			isa = PBXGroup;
 			children = (
-				219487D11DE6E0CF009FE82E /* TencentOpenApi_IOS_Bundle.bundle */,
-				219487CF1DE6E0C3009FE82E /* TencentOpenAPI.framework */,
-				219487BA1DE6D412009FE82E /* RCTQQSDK */,
-				219487B91DE6D412009FE82E /* Products */,
-				219487D41DE827BA009FE82E /* Frameworks */,
+				219489011DED59BC009FE82E /* RCTQQSDK */,
+				219489001DED59BC009FE82E /* Products */,
 			);
 			sourceTree = "<group>";
 		};
-		219487B91DE6D412009FE82E /* Products */ = {
+		219489001DED59BC009FE82E /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				219487B81DE6D412009FE82E /* libRCTQQSDK.a */,
+				219488FF1DED59BC009FE82E /* libRCTQQSDK.a */,
 			);
 			name = Products;
 			sourceTree = "<group>";
 		};
-		219487BA1DE6D412009FE82E /* RCTQQSDK */ = {
+		219489011DED59BC009FE82E /* RCTQQSDK */ = {
 			isa = PBXGroup;
 			children = (
-				219487BB1DE6D412009FE82E /* RCTQQSDK.h */,
-				219487BC1DE6D412009FE82E /* RCTQQSDK.m */,
+				2194890B1DED5A33009FE82E /* TencentOpenAPI.framework */,
+				2194890C1DED5A33009FE82E /* TencentOpenApi_IOS_Bundle.bundle */,
+				219489021DED59BC009FE82E /* RCTQQSDK.h */,
+				219489031DED59BC009FE82E /* RCTQQSDK.m */,
 			);
 			path = RCTQQSDK;
-			sourceTree = "<group>";
-		};
-		219487D41DE827BA009FE82E /* Frameworks */ = {
-			isa = PBXGroup;
-			children = (
-				219487E11DE82814009FE82E /* libiconv.tbd */,
-				219487DF1DE82804009FE82E /* libsqlite3.tbd */,
-				219487DD1DE827F9009FE82E /* libstdc++.tbd */,
-				219487DB1DE827ED009FE82E /* libz.tbd */,
-				219487D91DE827D2009FE82E /* SystemConfiguration.framework */,
-				219487D71DE827C5009FE82E /* CoreTelephony.framework */,
-				219487D51DE827BA009FE82E /* CoreGraphics.framework */,
-			);
-			name = Frameworks;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		219487B71DE6D412009FE82E /* RCTQQSDK */ = {
+		219488FE1DED59BC009FE82E /* RCTQQSDK */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 219487C11DE6D412009FE82E /* Build configuration list for PBXNativeTarget "RCTQQSDK" */;
+			buildConfigurationList = 219489081DED59BC009FE82E /* Build configuration list for PBXNativeTarget "RCTQQSDK" */;
 			buildPhases = (
-				219487B41DE6D412009FE82E /* Sources */,
-				219487B51DE6D412009FE82E /* Frameworks */,
-				219487B61DE6D412009FE82E /* CopyFiles */,
-				219487D21DE6E129009FE82E /* Resources */,
+				219488FB1DED59BC009FE82E /* Sources */,
+				219488FC1DED59BC009FE82E /* Frameworks */,
+				219488FD1DED59BC009FE82E /* CopyFiles */,
+				2194890E1DED5A55009FE82E /* Resources */,
 			);
 			buildRules = (
 			);
@@ -127,65 +91,65 @@
 			);
 			name = RCTQQSDK;
 			productName = RCTQQSDK;
-			productReference = 219487B81DE6D412009FE82E /* libRCTQQSDK.a */;
+			productReference = 219488FF1DED59BC009FE82E /* libRCTQQSDK.a */;
 			productType = "com.apple.product-type.library.static";
 		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
-		219487B01DE6D412009FE82E /* Project object */ = {
+		219488F71DED59BC009FE82E /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
 				LastUpgradeCheck = 0810;
 				ORGANIZATIONNAME = Van;
 				TargetAttributes = {
-					219487B71DE6D412009FE82E = {
+					219488FE1DED59BC009FE82E = {
 						CreatedOnToolsVersion = 8.1;
 						ProvisioningStyle = Automatic;
 					};
 				};
 			};
-			buildConfigurationList = 219487B31DE6D412009FE82E /* Build configuration list for PBXProject "RCTQQSDK" */;
+			buildConfigurationList = 219488FA1DED59BC009FE82E /* Build configuration list for PBXProject "RCTQQSDK" */;
 			compatibilityVersion = "Xcode 3.2";
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
 			knownRegions = (
 				en,
 			);
-			mainGroup = 219487AF1DE6D412009FE82E;
-			productRefGroup = 219487B91DE6D412009FE82E /* Products */;
+			mainGroup = 219488F61DED59BC009FE82E;
+			productRefGroup = 219489001DED59BC009FE82E /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				219487B71DE6D412009FE82E /* RCTQQSDK */,
+				219488FE1DED59BC009FE82E /* RCTQQSDK */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
-		219487D21DE6E129009FE82E /* Resources */ = {
+		2194890E1DED5A55009FE82E /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				219487D31DE6E135009FE82E /* TencentOpenApi_IOS_Bundle.bundle in Resources */,
+				2194890F1DED5A5B009FE82E /* TencentOpenApi_IOS_Bundle.bundle in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
-		219487B41DE6D412009FE82E /* Sources */ = {
+		219488FB1DED59BC009FE82E /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				219487BD1DE6D412009FE82E /* RCTQQSDK.m in Sources */,
+				219489041DED59BC009FE82E /* RCTQQSDK.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin XCBuildConfiguration section */
-		219487BF1DE6D412009FE82E /* Debug */ = {
+		219489061DED59BC009FE82E /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -232,7 +196,7 @@
 			};
 			name = Debug;
 		};
-		219487C01DE6D412009FE82E /* Release */ = {
+		219489071DED59BC009FE82E /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -273,12 +237,12 @@
 			};
 			name = Release;
 		};
-		219487C21DE6D412009FE82E /* Debug */ = {
+		219489091DED59BC009FE82E /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
-					"$(PROJECT_DIR)",
+					"$(PROJECT_DIR)/RCTQQSDK",
 				);
 				HEADER_SEARCH_PATHS = "$(SRCROOT)/../../react-native/React/**";
 				OTHER_LDFLAGS = "-ObjC";
@@ -287,12 +251,12 @@
 			};
 			name = Debug;
 		};
-		219487C31DE6D412009FE82E /* Release */ = {
+		2194890A1DED59BC009FE82E /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
-					"$(PROJECT_DIR)",
+					"$(PROJECT_DIR)/RCTQQSDK",
 				);
 				HEADER_SEARCH_PATHS = "$(SRCROOT)/../../react-native/React/**";
 				OTHER_LDFLAGS = "-ObjC";
@@ -304,25 +268,25 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		219487B31DE6D412009FE82E /* Build configuration list for PBXProject "RCTQQSDK" */ = {
+		219488FA1DED59BC009FE82E /* Build configuration list for PBXProject "RCTQQSDK" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				219487BF1DE6D412009FE82E /* Debug */,
-				219487C01DE6D412009FE82E /* Release */,
+				219489061DED59BC009FE82E /* Debug */,
+				219489071DED59BC009FE82E /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		219487C11DE6D412009FE82E /* Build configuration list for PBXNativeTarget "RCTQQSDK" */ = {
+		219489081DED59BC009FE82E /* Build configuration list for PBXNativeTarget "RCTQQSDK" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				219487C21DE6D412009FE82E /* Debug */,
-				219487C31DE6D412009FE82E /* Release */,
+				219489091DED59BC009FE82E /* Debug */,
+				2194890A1DED59BC009FE82E /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
-	rootObject = 219487B01DE6D412009FE82E /* Project object */;
+	rootObject = 219488F71DED59BC009FE82E /* Project object */;
 }

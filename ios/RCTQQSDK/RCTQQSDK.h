@@ -14,6 +14,4 @@
 #import "RCTEventEmitter.h"
 
 @interface RCTQQSDK : RCTEventEmitter <RCTBridgeModule,TencentSessionDelegate,QQApiInterfaceDelegate>
-@property(nonatomic) TencentOAuth *tencentOAuth;
-@property(nonatomic, copy) NSArray *permissions;
 @end

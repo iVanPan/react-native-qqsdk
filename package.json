@@ -6,16 +6,15 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
+  "author": "https://github.com/iVanPan",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/iVanPan/Cordova_QQ/issues"
+  },
+  "homepage": "https://github.com/iVanPan/Cordova_QQ",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/iVanPan/Cordova_QQ.git"
-  },
-  "cordova": {
-    "id": "react-native-qqsdk",
-    "platforms": [
-      "android",
-      "ios"
-    ]
   },
   "keywords": [
     "ecosystem:react-native",
@@ -30,10 +29,28 @@
     "share",
     "favorites"
   ],
-  "author": "https://github.com/iVanPan",
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/iVanPan/Cordova_QQ/issues"
+  "dependencies": {
+    "glob": "^5.0.15",
+    "inquirer": "1.1.2",
+    "plist": "1.2.0",
+    "lodash": "^4.17.2",
+    "path": "^0.12.7"
   },
-  "homepage": "https://github.com/iVanPan/Cordova_QQ",
+  "rnpm": {
+    "ios": {
+      "sharedLibraries": [
+        "libz",
+        "libiconv",
+        "libsqlite3",
+        "libstdc++",
+        "Security",
+        "SystemConfiguration",
+        "CoreTelephony",
+        "CoreGraphics"
+      ]
+    },
+    "commands": {
+      "postlink": "node node_modules/react-native-qqsdk/scripts/postlink/postlink"
+    }
+  }
 }

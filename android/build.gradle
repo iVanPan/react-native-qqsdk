@@ -1,0 +1,35 @@
+import groovy.json.JsonSlurper
+
+def computeVersionName() {
+    // dynamically retrieve version from package.json
+    def slurper = new JsonSlurper()
+    def json = slurper.parse(file('../../../package.json'), "utf-8")
+    return json.version
+}
+apply plugin: 'com.android.library'
+
+android {
+    compileSdkVersion 23
+    buildToolsVersion "25.0.0"
+
+    defaultConfig {
+        minSdkVersion 16
+        targetSdkVersion 24
+        versionCode 1
+        versionName computeVersionName()
+        manifestPlaceholders = [
+                QQ_APP_ID: ${QQ_APP_ID}, //在此替换你的APPKey
+        ]
+    }
+    sourceSets.main {
+        jniLibs.srcDirs = ['libs']
+    }
+}
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compile "com.facebook.react:react-native:+"
+    compile fileTree(dir: 'libs', include: ['*.jar'])
+}

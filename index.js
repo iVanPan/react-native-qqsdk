@@ -1,10 +1,11 @@
 'use strict'
+import {
+  NativeModules, 
+  NativeEventEmitter
+} from 'react-native';
 
-const { NativeModules, NativeEventEmitter } = require('react-native');
+const {QQSDK} =  NativeModules;
+export const isQQClientInstalled = QQSDK.checkClientInstalled;
+export const ssoLogin = QQSDK.ssoLogin;
+export const logout = QQSDK.logout;
 
-export const isQQClientInstalled = NativeModules.RCTQQSDK.checkClientInstalled;
-
-const qqsdk = new NativeEventEmitter(NativeModules.RCTQQSDK);
-qqsdk.addListener('LoginResponse', (data) => console.log(data));
-qqsdk.addListener('ShareResponse', (data) => console.log(data));
-qqsdk.addListener('LoginOutResponse', (data) => console.log(data));
