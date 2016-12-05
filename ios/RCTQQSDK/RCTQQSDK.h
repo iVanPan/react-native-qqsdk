@@ -12,6 +12,7 @@
 #import <TencentOpenAPI/TencentOAuth.h>
 #import "RCTBridge.h"
 #import "RCTEventEmitter.h"
+#import "RCTConvert+QQShareType.h"
 
-@interface RCTQQSDK : RCTEventEmitter <RCTBridgeModule,TencentSessionDelegate,QQApiInterfaceDelegate>
+@interface RCTQQSDK : RCTEventEmitter <TencentSessionDelegate,QQApiInterfaceDelegate>
 @end

@@ -11,6 +11,7 @@
 		219489051DED59BC009FE82E /* RCTQQSDK.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 219489021DED59BC009FE82E /* RCTQQSDK.h */; };
 		2194890D1DED5A33009FE82E /* TencentOpenAPI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2194890B1DED5A33009FE82E /* TencentOpenAPI.framework */; };
 		2194890F1DED5A5B009FE82E /* TencentOpenApi_IOS_Bundle.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 2194890C1DED5A33009FE82E /* TencentOpenApi_IOS_Bundle.bundle */; };
+		21B8027A1DF5129C00480898 /* RCTConvert+QQShareType.m in Sources */ = {isa = PBXBuildFile; fileRef = 21B802791DF5129C00480898 /* RCTConvert+QQShareType.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -32,6 +33,8 @@
 		219489031DED59BC009FE82E /* RCTQQSDK.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RCTQQSDK.m; sourceTree = "<group>"; };
 		2194890B1DED5A33009FE82E /* TencentOpenAPI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = TencentOpenAPI.framework; sourceTree = "<group>"; };
 		2194890C1DED5A33009FE82E /* TencentOpenApi_IOS_Bundle.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = TencentOpenApi_IOS_Bundle.bundle; sourceTree = "<group>"; };
+		21B802781DF5129C00480898 /* RCTConvert+QQShareType.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "RCTConvert+QQShareType.h"; sourceTree = "<group>"; };
+		21B802791DF5129C00480898 /* RCTConvert+QQShareType.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "RCTConvert+QQShareType.m"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -69,6 +72,8 @@
 				2194890C1DED5A33009FE82E /* TencentOpenApi_IOS_Bundle.bundle */,
 				219489021DED59BC009FE82E /* RCTQQSDK.h */,
 				219489031DED59BC009FE82E /* RCTQQSDK.m */,
+				21B802781DF5129C00480898 /* RCTConvert+QQShareType.h */,
+				21B802791DF5129C00480898 /* RCTConvert+QQShareType.m */,
 			);
 			path = RCTQQSDK;
 			sourceTree = "<group>";
@@ -143,6 +148,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				219489041DED59BC009FE82E /* RCTQQSDK.m in Sources */,
+				21B8027A1DF5129C00480898 /* RCTConvert+QQShareType.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

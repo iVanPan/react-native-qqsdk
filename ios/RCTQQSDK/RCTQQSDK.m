@@ -16,26 +16,15 @@ NSString *QQ_LOGIN_NETWORK_ERROR = @"QQ login network error";
 NSString *QQ_SHARE_CANCEL = @"QQ share cancelled by user";
 NSString *QQ_OTHER_ERROR = @"other error happened";
 NSString *appId=@"";
-typedef NS_ENUM(NSInteger, QQShareType) {
-    TextMessage,
-    ImageMesssage,
-    NewsMessageWithNetworkImage,
-    NewsMessageWithLocalImage,
-    AudioMessage,
-    VideoMessage,
-};
-typedef NS_ENUM(NSInteger, QQShareScene) {
-    QQ,
-    QQZONE,
-    Favrites,
-    DataLine,
-};
+
 @implementation RCTQQSDK {
     TencentOAuth *tencentOAuth;
     RCTPromiseResolveBlock loginResolve;
     RCTPromiseRejectBlock loginReject;
     RCTPromiseResolveBlock logoutResolve;
     RCTPromiseRejectBlock logoutReject;
+    RCTPromiseResolveBlock shareResolve;
+    RCTPromiseRejectBlock shareReject;
 }
 
 RCT_EXPORT_MODULE()
@@ -54,6 +43,7 @@ RCT_EXPORT_MODULE()
 
 - (void)handleOpenURLNotification:(NSNotification *)notification {
     NSURL *url = [NSURL URLWithString: [notification userInfo][@"url"]];
+    NSLog(@"openUrl is %@",url);
     NSString *schemaPrefix = [@"tencent" stringByAppendingString:appId];
     if ([url isKindOfClass:[NSURL class]] && [[url absoluteString] hasPrefix:[schemaPrefix stringByAppendingString:@"://response_from_qq"]]) {
         [QQApiInterface handleOpenURL:url delegate:self];
@@ -120,19 +110,71 @@ RCT_EXPORT_MODULE()
             [QQApiInterface sendReq:req];
         }
             break;
-        case VideoMessage: {
-            
-        }
-            break;
         default:
             break;
     }
+}
+- (NSDictionary*)makeResultWithUserId:(NSString*)userId
+                          accessToken:(NSString*)accessToken
+                       expirationDate:(NSDate*)expirationDate{
+    NSDictionary *result = @{@"userid" : userId,
+                             @"access_token" : accessToken,
+                             @"expires_time" : [NSString stringWithFormat:@"%f",[expirationDate timeIntervalSince1970] * 1000]};
+    return result;
+}
+
+- (void)handleSendResult:(QQApiSendResultCode)sendResult {
+    switch (sendResult) {
+        case EQQAPIAPPNOTREGISTED: {
+            NSLog(@"App未注册");
+            break;
+        }
+        case EQQAPIMESSAGECONTENTINVALID:
+        case EQQAPIMESSAGECONTENTNULL:
+        case EQQAPIMESSAGETYPEINVALID: {
+            NSLog(@"发送参数错误");
+            break;
+        }
+        case EQQAPIQQNOTINSTALLED: {
+            NSLog(@"没有安装手机QQ");
+            break;
+        }
+        case EQQAPIQQNOTSUPPORTAPI: {
+            NSLog(@"API接口不支持");
+            break;
+        }
+        case EQQAPISENDFAILD: {
+            NSLog(@"发送失败");
+            break;
+        }
+        case EQQAPIVERSIONNEEDUPDATE: {
+            NSLog(@"当前QQ版本太低");
+            break;
+        }
+        default: {
+            NSLog(@"发生位置错误");
+            break;
+        }
+    }
+}
+- (NSArray<NSString *> *)supportedEvents {
+    return @[@"sayHello"];
 }
 - (dispatch_queue_t)methodQueue {
     return dispatch_get_main_queue();
 }
 
-
+- (NSDictionary *)constantsToExport {
+    return @{@"TextMessage": @(TextMessage),
+             @"ImageMesssage": @(ImageMesssage),
+             @"NewsMessageWithNetworkImage": @(NewsMessageWithNetworkImage),
+             @"NewsMessageWithLocalImage": @(NewsMessageWithLocalImage),
+             @"QQ": @(QQ),
+             @"QQZONE": @(QQZONE),
+             @"Favrites": @(Favrites),
+             @"DataLine": @(DataLine),
+             };
+}
 RCT_EXPORT_METHOD(checkClientInstalled
                   :(RCTPromiseResolveBlock)resolve
                   :(RCTPromiseRejectBlock)reject) {
@@ -150,9 +192,7 @@ RCT_EXPORT_METHOD(ssoLogin
         [self initTencentOAuth];
     }
     if ([tencentOAuth isSessionValid]) {
-        NSDictionary *result = @{@"userid" : tencentOAuth.openId,
-                                 @"access_token" : tencentOAuth.accessToken,
-                                 @"expires_time" : [NSString stringWithFormat:@"%f",[tencentOAuth.expirationDate timeIntervalSince1970] * 1000]};
+        NSDictionary *result = [self makeResultWithUserId:tencentOAuth.openId accessToken:tencentOAuth.accessToken expirationDate:tencentOAuth.expirationDate];
         resolve(result);
     } else {
         loginResolve = resolve;
@@ -195,15 +235,26 @@ RCT_EXPORT_METHOD(logout
     NSLog(@" ----resp %@",resp.result);
     switch ([resp.result integerValue]) {
         case 0: {
-            [self sendEventWithName:@"ShareResponse" body: @{@"code": @"200"}];
+            if(shareReject){
+                shareResolve(@YES);
+                shareResolve = nil;
+                shareReject = nil;
+            }
             break;
         }
         case -4: {
-            [self sendEventWithName:@"ShareResponse" body: @{@"error": QQ_SHARE_CANCEL}];
+            if(shareReject) {
+                shareReject(QQ_SHARE_CANCEL,QQ_SHARE_CANCEL,nil);
+                shareResolve = nil;
+            }
             break;
         }
         default:{
-            [self sendEventWithName:@"ShareResponse" body: @{@"error": QQ_OTHER_ERROR}];
+            if(shareReject) {
+                shareReject(QQ_OTHER_ERROR,QQ_OTHER_ERROR,nil);
+                shareReject = nil;
+                shareResolve = nil;
+            }
             break;
         }
     }
@@ -216,9 +267,7 @@ RCT_EXPORT_METHOD(logout
 #pragma mark - TencentSessionDelegate
 - (void)tencentDidLogin {
     if (tencentOAuth.accessToken && 0 != [tencentOAuth.accessToken length] && loginResolve) {
-        NSDictionary *result = @{@"userid" : tencentOAuth.openId,
-                                 @"access_token" : tencentOAuth.accessToken,
-                                 @"expires_time" : [NSString stringWithFormat:@"%f",[tencentOAuth.expirationDate timeIntervalSince1970] * 1000]};
+        NSDictionary *result = [self makeResultWithUserId:tencentOAuth.openId accessToken:tencentOAuth.accessToken expirationDate:tencentOAuth.expirationDate];
         loginResolve(result);
         loginReject = nil;
     } else {
@@ -260,6 +309,8 @@ RCT_EXPORT_METHOD(logout
     loginReject = nil;
     logoutResolve = nil;
     logoutReject = nil;
+    shareResolve = nil;
+    shareReject = nil;
 }
 
 @end
