@@ -12,7 +12,22 @@
 #import <TencentOpenAPI/TencentOAuth.h>
 #import "RCTBridge.h"
 #import "RCTEventEmitter.h"
-#import "RCTConvert+QQShareType.h"
+
+typedef NS_ENUM(NSInteger, QQShareScene) {
+    QQ,
+    QQZONE,
+    Favrites,
+    DataLine,
+};
+
+typedef NS_ENUM(NSInteger, QQShareType) {
+    TextMessage,
+    ImageMesssage,
+    NewsMessageWithNetworkImage,
+    NewsMessageWithLocalImage,
+    AudioMessage,
+};
+
 
 @interface RCTQQSDK : RCTEventEmitter <TencentSessionDelegate,QQApiInterfaceDelegate>
 @end

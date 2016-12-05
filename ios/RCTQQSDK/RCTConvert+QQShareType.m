@@ -15,9 +15,5 @@ RCT_ENUM_CONVERTER(QQShareType, (@{@"TextMessage": @(TextMessage),
                                 @"NewsMessageWithNetworkImage": @(NewsMessageWithNetworkImage),
                                 @"NewsMessageWithLocalImage": @(NewsMessageWithLocalImage),
                                 }), TextMessage, integerValue)
-RCT_ENUM_CONVERTER(QQShareScene, (@{@"QQ": @(QQ),
-                                   @"QQZONE": @(QQZONE),
-                                   @"Favrites": @(Favrites),
-                                   @"DataLine": @(DataLine),
-                                   }), QQ, integerValue)
+
 @end

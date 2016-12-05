@@ -1,5 +1,5 @@
 //
-//  RCTConvert+QQShareType.h
+//  RCTConvert+QQShareScene.h
 //  RCTQQSDK
 //
 //  Created by Van on 2016/12/5.
@@ -8,7 +8,6 @@
 
 #import <RCTConvert.h>
 #import "RCTQQSDK.h"
-
-@interface RCTConvert(QQShareType)
-+ (QQShareType)QQShareType:(id)json;
+@interface RCTConvert(QQShareScene)
++ (QQShareScene)QQShareScene:(id)json;
 @end
