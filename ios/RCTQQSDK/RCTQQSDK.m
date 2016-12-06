@@ -70,9 +70,11 @@ RCT_EXPORT_MODULE()
 - (void)shareObjectWithData:(NSDictionary *)shareData Type:(QQShareType)type Scene:(QQShareScene) scene{
     switch (type) {
         case TextMessage: {
-            QQApiTextObject* txtObj = [QQApiTextObject objectWithText:@"Test Text"];
+            NSString* msg = [shareData objectForKey:@"TextMessage"];
+            QQApiTextObject* txtObj = [QQApiTextObject objectWithText:msg];
             SendMessageToQQReq* req = [SendMessageToQQReq reqWithContent:txtObj];
-            [QQApiInterface sendReq:req];
+            QQApiSendResultCode sent =[QQApiInterface sendReq:req];
+            [self handleSendResult:sent];
         }
             break;
         case ImageMesssage:{
@@ -80,7 +82,8 @@ RCT_EXPORT_MODULE()
             NSData* data = [NSData dataWithContentsOfFile:path];
             QQApiImageObject* imgObj = [QQApiImageObject objectWithData:data previewImageData:data title:@"" description:@""];
             SendMessageToQQReq* req = [SendMessageToQQReq reqWithContent:imgObj];
-            [QQApiInterface sendReq:req];
+            QQApiSendResultCode sent =[QQApiInterface sendReq:req];
+            [self handleSendResult:sent];
         }
             break;
         case NewsMessageWithLocalImage:{
@@ -90,7 +93,8 @@ RCT_EXPORT_MODULE()
             
             QQApiNewsObject* newsObj = [QQApiNewsObject objectWithURL:url title:@"" description:@"" previewImageData:data];
             SendMessageToQQReq* req = [SendMessageToQQReq reqWithContent:newsObj];
-            [QQApiInterface sendReq:req];
+            QQApiSendResultCode sent =[QQApiInterface sendReq:req];
+            [self handleSendResult:sent];
         }
             break;
         case NewsMessageWithNetworkImage:{
@@ -98,7 +102,8 @@ RCT_EXPORT_MODULE()
             NSURL* url = [NSURL URLWithString:@""];
             QQApiNewsObject* newsObj = [QQApiNewsObject objectWithURL:url title:@"" description:@"" previewImageURL:previewURL];
             SendMessageToQQReq* req = [SendMessageToQQReq reqWithContent:newsObj];
-            [QQApiInterface sendReq:req];
+            QQApiSendResultCode sent =[QQApiInterface sendReq:req];
+            [self handleSendResult:sent];
         }
             break;
         case AudioMessage:{
@@ -107,7 +112,8 @@ RCT_EXPORT_MODULE()
             NSURL* url = [NSURL URLWithString:@""];
             QQApiAudioObject* audioObj = [QQApiAudioObject objectWithURL:url title:@"" description:@"" previewImageData:data];
             SendMessageToQQReq* req = [SendMessageToQQReq reqWithContent:audioObj];
-            [QQApiInterface sendReq:req];
+            QQApiSendResultCode sent =[QQApiInterface sendReq:req];
+            [self handleSendResult:sent];
         }
             break;
         default:
@@ -125,40 +131,77 @@ RCT_EXPORT_MODULE()
 
 - (void)handleSendResult:(QQApiSendResultCode)sendResult {
     switch (sendResult) {
+        case EQQAPISENDSUCESS:
+            break;
         case EQQAPIAPPNOTREGISTED: {
             NSLog(@"App未注册");
+            if(shareReject) {
+                shareReject(@"100",@"App未注册",nil);
+                shareReject = nil;
+                shareResolve = nil;
+            }
             break;
         }
         case EQQAPIMESSAGECONTENTINVALID:
         case EQQAPIMESSAGECONTENTNULL:
         case EQQAPIMESSAGETYPEINVALID: {
             NSLog(@"发送参数错误");
+            if(shareReject) {
+                shareReject(@"100",@"发送参数错误",nil);
+                shareReject = nil;
+                shareResolve = nil;
+            }
             break;
         }
         case EQQAPIQQNOTINSTALLED: {
             NSLog(@"没有安装手机QQ");
+            if(shareReject) {
+                shareReject(@"100",@"没有安装手机QQ",nil);
+                shareReject = nil;
+                shareResolve = nil;
+            }
             break;
         }
         case EQQAPIQQNOTSUPPORTAPI: {
             NSLog(@"API接口不支持");
+            if(shareReject) {
+                shareReject(@"100",@"API接口不支持",nil);
+                shareReject = nil;
+                shareResolve = nil;
+            }
             break;
         }
         case EQQAPISENDFAILD: {
             NSLog(@"发送失败");
+            if(shareReject) {
+                shareReject(@"100",@"发送失败",nil);
+                shareReject = nil;
+                shareResolve = nil;
+            }
             break;
         }
         case EQQAPIVERSIONNEEDUPDATE: {
             NSLog(@"当前QQ版本太低");
+            if(shareReject) {
+                shareReject(@"100",@"当前QQ版本太低",nil);
+                shareReject = nil;
+                shareResolve = nil;
+            }
             break;
         }
         default: {
-            NSLog(@"发生位置错误");
+            NSLog(@"发生其他错误");
+            if(shareReject) {
+                shareReject(@"100",@"发生其他错误",nil);
+                shareReject = nil;
+                shareResolve = nil;
+            }
             break;
         }
     }
 }
 - (NSArray<NSString *> *)supportedEvents {
-    return @[@"sayHello"];
+    return @[];
 }
 - (dispatch_queue_t)methodQueue {
     return dispatch_get_main_queue();
@@ -170,7 +213,7 @@ RCT_EXPORT_MODULE()
              @"NewsMessageWithNetworkImage": @(NewsMessageWithNetworkImage),
              @"NewsMessageWithLocalImage": @(NewsMessageWithLocalImage),
              @"QQ": @(QQ),
-             @"QQZONE": @(QQZONE),
+             @"QQZone": @(QQZone),
              @"Favrites": @(Favrites),
              @"DataLine": @(DataLine),
              };
@@ -224,6 +267,13 @@ RCT_EXPORT_METHOD(logout
     logoutResolve = resolve;
     logoutReject = reject;
     [tencentOAuth logout: self];
+}
+RCT_EXPORT_METHOD(shareTextToQQ:(NSString *)Text
+                  :(RCTPromiseResolveBlock)resolve
+                  :(RCTPromiseRejectBlock)reject) {
+    shareReject = reject;
+    shareResolve = resolve;
+    [self shareObjectWithData:@{@"TextMessage":Text} Type:TextMessage Scene:QQ];
 }
 
 #pragma mark - QQApiInterfaceDelegate

@@ -15,7 +15,7 @@
 
 typedef NS_ENUM(NSInteger, QQShareScene) {
     QQ,
-    QQZONE,
+    QQZone,
     Favrites,
     DataLine,
 };
