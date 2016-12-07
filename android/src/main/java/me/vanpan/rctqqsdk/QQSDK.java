@@ -22,8 +22,6 @@ import com.tencent.tauth.UiError;
 
 import org.json.JSONObject;
 
-import static com.tencent.open.utils.Global.getPackageName;
-
 public class QQSDK extends ReactContextBaseJavaModule {
 
     private static Tencent mTencent;
@@ -65,16 +63,14 @@ public class QQSDK extends ReactContextBaseJavaModule {
         super(reactContext);
         reactContext.addActivityEventListener(mActivityEventListener);
         APP_ID = this.getAppID(reactContext);
+        if (null == mTencent) {
+            mTencent = Tencent.createInstance(APP_ID, reactContext);
+        }
     }
 
     @Override
     public void initialize() {
         super.initialize();
-        if (null == mTencent) {
-            mTencent = Tencent.createInstance(APP_ID, getCurrentActivity()
-                    .getApplicationContext());
-        }
-
     }
 
     @Override
@@ -154,9 +150,9 @@ public class QQSDK extends ReactContextBaseJavaModule {
     private String getAppID(ReactApplicationContext reactContext) {
         try {
             ApplicationInfo appInfo = reactContext.getPackageManager()
-                    .getApplicationInfo(getPackageName(),
+                    .getApplicationInfo(reactContext.getPackageName(),
                             PackageManager.GET_META_DATA);
-            String key = appInfo.metaData.getString("QQ_APP_ID");
+            String key = appInfo.metaData.get("QQ_APP_ID").toString();
             return key;
         } catch (PackageManager.NameNotFoundException e) {
             e.printStackTrace();
