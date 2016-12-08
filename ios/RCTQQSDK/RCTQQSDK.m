@@ -41,36 +41,147 @@ RCT_EXPORT_MODULE()
     return self;
 }
 
-- (void)handleOpenURLNotification:(NSNotification *)notification {
-    NSURL *url = [NSURL URLWithString: [notification userInfo][@"url"]];
-    NSLog(@"openUrl is %@",url);
-    NSString *schemaPrefix = [@"tencent" stringByAppendingString:appId];
-    if ([url isKindOfClass:[NSURL class]] && [[url absoluteString] hasPrefix:[schemaPrefix stringByAppendingString:@"://response_from_qq"]]) {
-        [QQApiInterface handleOpenURL:url delegate:self];
+- (NSArray<NSString *> *)supportedEvents {
+    return @[];
+}
+- (dispatch_queue_t)methodQueue {
+    return dispatch_get_main_queue();
+}
+
+- (NSDictionary *)constantsToExport {
+    return @{@"TextMessage": @(TextMessage),
+             @"ImageMesssage": @(ImageMesssage),
+             @"NewsMessageWithNetworkImage": @(NewsMessageWithNetworkImage),
+             @"NewsMessageWithLocalImage": @(NewsMessageWithLocalImage),
+             @"QQ": @(QQ),
+             @"QQZone": @(QQZone),
+             @"Favrites": @(Favrites),
+             @"DataLine": @(DataLine),
+             };
+}
+RCT_EXPORT_METHOD(checkClientInstalled
+                  :(RCTPromiseResolveBlock)resolve
+                  :(RCTPromiseRejectBlock)reject) {
+    if ([TencentOAuth iphoneQQInstalled] && [TencentOAuth iphoneQQSupportSSOLogin]) {
+        resolve(@YES);
     } else {
-        [TencentOAuth HandleOpenURL:url];
+        reject(QQ_NOT_INSTALLED, QQ_NOT_INSTALLED, nil);
     }
 }
-- (void)initTencentOAuth {
-    NSArray *urlTypes = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleURLTypes"];
-    for (id type in urlTypes) {
-        NSArray *urlSchemes = [type objectForKey:@"CFBundleURLSchemes"];
-        for (id scheme in urlSchemes) {
-            if([scheme isKindOfClass:[NSString class]]) {
-                NSString* value = (NSString*)scheme;
-                if ([value hasPrefix:@"tencent"] && (nil == tencentOAuth)) {
-                    appId = [value substringFromIndex:7];
-                    tencentOAuth = [[TencentOAuth alloc] initWithAppId: appId andDelegate: self];
-                    break;
-                }
-            }
-        }
+
+RCT_EXPORT_METHOD(ssoLogin
+                  :(RCTPromiseResolveBlock)resolve
+                  :(RCTPromiseRejectBlock)reject) {
+    if(nil == tencentOAuth) {
+        [self initTencentOAuth];
+    }
+    if ([tencentOAuth isSessionValid]) {
+        NSDictionary *result = [self makeResultWithUserId:tencentOAuth.openId accessToken:tencentOAuth.accessToken expirationDate:tencentOAuth.expirationDate];
+        resolve(result);
+    } else {
+        loginResolve = resolve;
+        loginReject = reject;
+        NSArray *permissions = [NSArray arrayWithObjects:
+                                kOPEN_PERMISSION_GET_USER_INFO,
+                                kOPEN_PERMISSION_GET_SIMPLE_USER_INFO,
+                                kOPEN_PERMISSION_ADD_ALBUM,
+                                kOPEN_PERMISSION_ADD_ONE_BLOG,
+                                kOPEN_PERMISSION_ADD_SHARE,
+                                kOPEN_PERMISSION_ADD_TOPIC,
+                                kOPEN_PERMISSION_CHECK_PAGE_FANS,
+                                kOPEN_PERMISSION_GET_INFO,
+                                kOPEN_PERMISSION_GET_OTHER_INFO,
+                                kOPEN_PERMISSION_LIST_ALBUM,
+                                kOPEN_PERMISSION_UPLOAD_PIC,
+                                kOPEN_PERMISSION_GET_VIP_INFO,
+                                kOPEN_PERMISSION_GET_VIP_RICH_INFO,
+                                nil];
+
+        [tencentOAuth authorize: permissions];
+    
     }
 }
+
+RCT_EXPORT_METHOD(logout
+                  :(RCTPromiseResolveBlock)resolve
+                  :(RCTPromiseRejectBlock)reject) {
+    logoutResolve = resolve;
+    logoutReject = reject;
+    [tencentOAuth logout: self];
+}
+RCT_EXPORT_METHOD(shareTextToQQ:(NSString *)text
+                  :(RCTPromiseResolveBlock)resolve
+                  :(RCTPromiseRejectBlock)reject) {
+    shareReject = reject;
+    shareResolve = resolve;
+    [self shareObjectWithData:@{@"text":text} Type:TextMessage Scene:QQ];
+}
+
+RCT_EXPORT_METHOD(shareImageToQQ:(NSString *)image withImageType:(NSInteger)type
+                  title:(NSString *)title
+                  description:(NSString *)description
+                  resolve:(RCTPromiseResolveBlock)resolve
+                  reject:(RCTPromiseRejectBlock)reject) {
+    switch (type) {
+        case Local:
+            [self shareLocalImageFileToQQ:image title:title description:description resolve:resolve reject:reject];
+            break;
+        case Network:
+            [self shareNetworkImageToQQ:image title:title description:description resolve:resolve reject:reject];
+            break;
+        case Base64:
+            [self shareBase64ImageToQQ:image title:title description:description resolve:resolve reject:reject];
+            break;
+        default:
+            reject(@"image Type不正确",@"image Type不正确",nil);
+            break;
+    }
+}
+///分享网络图片
+- (void)shareNetworkImageToQQ:(NSString *)imageUrl
+                        title:(NSString *)title
+                  description:(NSString *)description
+                  resolve:(RCTPromiseResolveBlock)resolve
+                  reject :(RCTPromiseRejectBlock)reject {
+    shareReject = reject;
+    shareResolve = resolve;
+    NSURL* url = [NSURL URLWithString:[imageUrl stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]];
+    if(url) {
+        NSData *data = [NSData dataWithContentsOfURL:url];
+        [self shareObjectWithData:@{@"image":data,@"title":title,@"description":description} Type:ImageMesssage Scene:QQ];
+    }else {
+        reject(@"图片参数不正确",@"",nil);
+        shareResolve = nil;
+        shareReject = nil;
+    }
+}
+///分享本地图片
+- (void)shareLocalImageFileToQQ:(NSString *)filePath
+                          title:(NSString *)title
+                    description:(NSString *)description
+                        resolve:(RCTPromiseResolveBlock)resolve
+                         reject:(RCTPromiseRejectBlock)reject {
+    shareReject = reject;
+    shareResolve = resolve;
+    NSLog(@"path is %@",filePath);
+    NSData* image = [NSData dataWithContentsOfFile:filePath];
+    [self shareObjectWithData:@{@"image":image,@"title":title,@"description":description} Type:ImageMesssage Scene:QQ];
+}
+-(void)shareBase64ImageToQQ:(NSString *)baseData
+                      title:(NSString *)title
+                description:(NSString *)description
+                  resolve:(RCTPromiseResolveBlock)resolve
+                  reject:(RCTPromiseRejectBlock)reject {
+    shareReject = reject;
+    shareResolve = resolve;
+    NSData* image = [[NSData alloc] initWithBase64EncodedString:baseData options:0];
+    [self shareObjectWithData:@{@"image":image,@"title":title,@"description":description} Type:ImageMesssage Scene:QQ];
+}
+
 - (void)shareObjectWithData:(NSDictionary *)shareData Type:(QQShareType)type Scene:(QQShareScene) scene{
     switch (type) {
         case TextMessage: {
-            NSString* msg = [shareData objectForKey:@"TextMessage"];
+            NSString* msg = [shareData objectForKey:@"text"];
             QQApiTextObject* txtObj = [QQApiTextObject objectWithText:msg];
             SendMessageToQQReq* req = [SendMessageToQQReq reqWithContent:txtObj];
             QQApiSendResultCode sent =[QQApiInterface sendReq:req];
@@ -78,9 +189,10 @@ RCT_EXPORT_MODULE()
         }
             break;
         case ImageMesssage:{
-            NSString *path = [[[NSBundle mainBundle] resourcePath] stringByAppendingPathComponent:@"img.jpg"];
-            NSData* data = [NSData dataWithContentsOfFile:path];
-            QQApiImageObject* imgObj = [QQApiImageObject objectWithData:data previewImageData:data title:@"" description:@""];
+            NSData* data = [shareData objectForKey:@"image"];
+            NSString* title = [shareData objectForKey:@"title"];
+            NSString* description = [shareData objectForKey:@"description"];
+            QQApiImageObject* imgObj = [QQApiImageObject objectWithData:data previewImageData:data title:title description:description];
             SendMessageToQQReq* req = [SendMessageToQQReq reqWithContent:imgObj];
             QQApiSendResultCode sent =[QQApiInterface sendReq:req];
             [self handleSendResult:sent];
@@ -119,14 +231,6 @@ RCT_EXPORT_MODULE()
         default:
             break;
     }
-}
-- (NSDictionary*)makeResultWithUserId:(NSString*)userId
-                          accessToken:(NSString*)accessToken
-                       expirationDate:(NSDate*)expirationDate{
-    NSDictionary *result = @{@"userid" : userId,
-                             @"access_token" : accessToken,
-                             @"expires_time" : [NSString stringWithFormat:@"%f",[expirationDate timeIntervalSince1970] * 1000]};
-    return result;
 }
 
 - (void)handleSendResult:(QQApiSendResultCode)sendResult {
@@ -200,82 +304,40 @@ RCT_EXPORT_MODULE()
         }
     }
 }
-- (NSArray<NSString *> *)supportedEvents {
-    return @[];
+- (NSDictionary*)makeResultWithUserId:(NSString*)userId
+                          accessToken:(NSString*)accessToken
+                       expirationDate:(NSDate*)expirationDate{
+    NSDictionary *result = @{@"userid" : userId,
+                             @"access_token" : accessToken,
+                             @"expires_time" : [NSString stringWithFormat:@"%f",[expirationDate timeIntervalSince1970] * 1000]};
+    return result;
 }
-- (dispatch_queue_t)methodQueue {
-    return dispatch_get_main_queue();
-}
-
-- (NSDictionary *)constantsToExport {
-    return @{@"TextMessage": @(TextMessage),
-             @"ImageMesssage": @(ImageMesssage),
-             @"NewsMessageWithNetworkImage": @(NewsMessageWithNetworkImage),
-             @"NewsMessageWithLocalImage": @(NewsMessageWithLocalImage),
-             @"QQ": @(QQ),
-             @"QQZone": @(QQZone),
-             @"Favrites": @(Favrites),
-             @"DataLine": @(DataLine),
-             };
-}
-RCT_EXPORT_METHOD(checkClientInstalled
-                  :(RCTPromiseResolveBlock)resolve
-                  :(RCTPromiseRejectBlock)reject) {
-    if ([TencentOAuth iphoneQQInstalled] && [TencentOAuth iphoneQQSupportSSOLogin]) {
-        resolve(@YES);
+- (void)handleOpenURLNotification:(NSNotification *)notification {
+    NSURL *url = [NSURL URLWithString: [notification userInfo][@"url"]];
+    NSLog(@"openUrl is %@",url);
+    NSString *schemaPrefix = [@"tencent" stringByAppendingString:appId];
+    if ([url isKindOfClass:[NSURL class]] && [[url absoluteString] hasPrefix:[schemaPrefix stringByAppendingString:@"://response_from_qq"]]) {
+        [QQApiInterface handleOpenURL:url delegate:self];
     } else {
-        reject(QQ_NOT_INSTALLED, QQ_NOT_INSTALLED, nil);
+        [TencentOAuth HandleOpenURL:url];
     }
 }
-
-RCT_EXPORT_METHOD(ssoLogin
-                  :(RCTPromiseResolveBlock)resolve
-                  :(RCTPromiseRejectBlock)reject) {
-    if(nil == tencentOAuth) {
-        [self initTencentOAuth];
-    }
-    if ([tencentOAuth isSessionValid]) {
-        NSDictionary *result = [self makeResultWithUserId:tencentOAuth.openId accessToken:tencentOAuth.accessToken expirationDate:tencentOAuth.expirationDate];
-        resolve(result);
-    } else {
-        loginResolve = resolve;
-        loginReject = reject;
-        NSArray *permissions = [NSArray arrayWithObjects:
-                                kOPEN_PERMISSION_GET_USER_INFO,
-                                kOPEN_PERMISSION_GET_SIMPLE_USER_INFO,
-                                kOPEN_PERMISSION_ADD_ALBUM,
-                                kOPEN_PERMISSION_ADD_ONE_BLOG,
-                                kOPEN_PERMISSION_ADD_SHARE,
-                                kOPEN_PERMISSION_ADD_TOPIC,
-                                kOPEN_PERMISSION_CHECK_PAGE_FANS,
-                                kOPEN_PERMISSION_GET_INFO,
-                                kOPEN_PERMISSION_GET_OTHER_INFO,
-                                kOPEN_PERMISSION_LIST_ALBUM,
-                                kOPEN_PERMISSION_UPLOAD_PIC,
-                                kOPEN_PERMISSION_GET_VIP_INFO,
-                                kOPEN_PERMISSION_GET_VIP_RICH_INFO,
-                                nil];
-
-        [tencentOAuth authorize: permissions];
-    
+- (void)initTencentOAuth {
+    NSArray *urlTypes = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleURLTypes"];
+    for (id type in urlTypes) {
+        NSArray *urlSchemes = [type objectForKey:@"CFBundleURLSchemes"];
+        for (id scheme in urlSchemes) {
+            if([scheme isKindOfClass:[NSString class]]) {
+                NSString* value = (NSString*)scheme;
+                if ([value hasPrefix:@"tencent"] && (nil == tencentOAuth)) {
+                    appId = [value substringFromIndex:7];
+                    tencentOAuth = [[TencentOAuth alloc] initWithAppId: appId andDelegate: self];
+                    break;
+                }
+            }
+        }
     }
 }
-
-RCT_EXPORT_METHOD(logout
-                  :(RCTPromiseResolveBlock)resolve
-                  :(RCTPromiseRejectBlock)reject) {
-    logoutResolve = resolve;
-    logoutReject = reject;
-    [tencentOAuth logout: self];
-}
-RCT_EXPORT_METHOD(shareTextToQQ:(NSString *)Text
-                  :(RCTPromiseResolveBlock)resolve
-                  :(RCTPromiseRejectBlock)reject) {
-    shareReject = reject;
-    shareResolve = resolve;
-    [self shareObjectWithData:@{@"TextMessage":Text} Type:TextMessage Scene:QQ];
-}
-
 #pragma mark - QQApiInterfaceDelegate
 - (void)onReq:(QQBaseReq *)req {
     NSLog(@"req is %@",req);

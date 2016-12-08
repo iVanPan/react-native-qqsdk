@@ -13,3 +13,6 @@ export const shareScene = {'QQ': QQSDK.QQ, 'QQZone': QQSDK.QQZone, 'Favrites': Q
 export function shareTextToQQ(text) {
 	return QQSDK.shareTextToQQ(text);
 }
+export function shareImageToQQ(image,type,title,description) {
+	return QQSDK.shareImageToQQ(image,type,title,description)
+}
