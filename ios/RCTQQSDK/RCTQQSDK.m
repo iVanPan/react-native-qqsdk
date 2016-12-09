@@ -54,7 +54,7 @@ RCT_EXPORT_MODULE()
              @"Network": @(Network),
              @"QQ": @(QQ),
              @"QQZone": @(QQZone),
-             @"Favrites": @(Favrites),
+             @"Favorite": @(Favorite),
              };
 }
 RCT_EXPORT_METHOD(checkClientInstalled
@@ -312,7 +312,7 @@ RCT_EXPORT_METHOD(shareVideo:(NSString *)previewUrl
                 case QQZone:
                     [self shareTextToQQZone:msg];
                     return;
-                case Favrites:
+                case Favorite:
                     [txtObj setCflag:kQQAPICtrlFlagQQShareFavorites];
                     break;
                 default:
@@ -336,7 +336,7 @@ RCT_EXPORT_METHOD(shareVideo:(NSString *)previewUrl
                 case QQZone:
                     [imgObj setCflag:kQQAPICtrlFlagQZoneShareOnStart];
                     break;
-                case Favrites:
+                case Favorite:
                     [imgObj setCflag:kQQAPICtrlFlagQQShareFavorites];
                     break;
                 default:
@@ -361,7 +361,7 @@ RCT_EXPORT_METHOD(shareVideo:(NSString *)previewUrl
                 case QQZone:
                     [newsObj setCflag:kQQAPICtrlFlagQZoneShareOnStart];
                     break;
-                case Favrites:
+                case Favorite:
                     [newsObj setCflag:kQQAPICtrlFlagQQShareFavorites];
                     break;
                 default:
@@ -386,7 +386,7 @@ RCT_EXPORT_METHOD(shareVideo:(NSString *)previewUrl
                 case QQZone:
                     [newsObj setCflag:kQQAPICtrlFlagQZoneShareOnStart];
                     break;
-                case Favrites:
+                case Favorite:
                     [newsObj setCflag:kQQAPICtrlFlagQQShareFavorites];
                     break;
                 default:
@@ -413,7 +413,7 @@ RCT_EXPORT_METHOD(shareVideo:(NSString *)previewUrl
                 case QQZone:
                     [audioObj setCflag:kQQAPICtrlFlagQZoneShareOnStart];
                     break;
-                case Favrites:
+                case Favorite:
                     [audioObj setCflag:kQQAPICtrlFlagQQShareFavorites];
                     break;
                 default:
@@ -440,7 +440,7 @@ RCT_EXPORT_METHOD(shareVideo:(NSString *)previewUrl
                 case QQZone:
                     [videoObj setCflag:kQQAPICtrlFlagQZoneShareOnStart];
                     break;
-                case Favrites:
+                case Favorite:
                     [videoObj setCflag:kQQAPICtrlFlagQQShareFavorites];
                     break;
                 default:

@@ -9,7 +9,7 @@ export const isQQClientInstalled = QQSDK.checkClientInstalled;
 export const ssoLogin = QQSDK.ssoLogin;
 export const logout = QQSDK.logout;
 export const imageType = {'Local': QQSDK.Local,'Base64': QQSDK.Base64, 'Network': QQSDK.Network};
-export const shareScene = {'QQ': QQSDK.QQ, 'QQZone': QQSDK.QQZone, 'Favrites': QQSDK.Favrites, 'DataLine': QQSDK.DataLine};
+export const shareScene = {'QQ': QQSDK.QQ, 'QQZone': QQSDK.QQZone, 'Favorite': QQSDK.Favorite};
 
 export function shareText(text,shareScene) {
 	return QQSDK.shareText(text,shareScene);

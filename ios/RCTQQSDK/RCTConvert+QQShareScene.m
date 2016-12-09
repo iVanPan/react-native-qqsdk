@@ -11,6 +11,6 @@
 @implementation RCTConvert(QQShareScene)
 RCT_ENUM_CONVERTER(QQShareScene, (@{@"QQ": @(QQ),
                                     @"QQZone": @(QQZone),
-                                    @"Favrites": @(Favrites),
+                                    @"Favorite": @(Favorite),
                                     }), QQ, integerValue)
 @end
