@@ -12,6 +12,5 @@
 RCT_ENUM_CONVERTER(QQShareScene, (@{@"QQ": @(QQ),
                                     @"QQZone": @(QQZone),
                                     @"Favrites": @(Favrites),
-                                    @"DataLine": @(DataLine),
                                     }), QQ, integerValue)
 @end

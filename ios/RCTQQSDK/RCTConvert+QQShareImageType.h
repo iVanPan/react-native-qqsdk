@@ -9,6 +9,6 @@
 #import <RCTConvert.h>
 #import "RCTQQSDK.h"
 
-@interface RCTConvert(QQShareType)
-+ (QQShareType)QQShareType:(id)json;
+@interface RCTConvert(QQShareImageType)
++ (QQShareImageType)QQShareImageType:(id)json;
 @end

@@ -17,7 +17,6 @@ typedef NS_ENUM(NSInteger, QQShareScene) {
     QQ,
     QQZone,
     Favrites,
-    DataLine,
 };
 
 typedef NS_ENUM(NSInteger, QQShareType) {
@@ -26,13 +25,13 @@ typedef NS_ENUM(NSInteger, QQShareType) {
     NewsMessageWithNetworkImage,
     NewsMessageWithLocalImage,
     AudioMessage,
+    VideoMessage,
 };
 typedef NS_ENUM(NSInteger, QQShareImageType) {
     Local,
     Base64,
     Network,
 };
-
 
 @interface RCTQQSDK :RCTEventEmitter <TencentSessionDelegate,QQApiInterfaceDelegate>
 @end

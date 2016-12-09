@@ -49,14 +49,12 @@ RCT_EXPORT_MODULE()
 }
 
 - (NSDictionary *)constantsToExport {
-    return @{@"TextMessage": @(TextMessage),
-             @"ImageMesssage": @(ImageMesssage),
-             @"NewsMessageWithNetworkImage": @(NewsMessageWithNetworkImage),
-             @"NewsMessageWithLocalImage": @(NewsMessageWithLocalImage),
+    return @{@"Local": @(Local),
+             @"Base64": @(Base64),
+             @"Network": @(Network),
              @"QQ": @(QQ),
              @"QQZone": @(QQZone),
              @"Favrites": @(Favrites),
-             @"DataLine": @(DataLine),
              };
 }
 RCT_EXPORT_METHOD(checkClientInstalled
@@ -76,7 +74,9 @@ RCT_EXPORT_METHOD(ssoLogin
         [self initTencentOAuth];
     }
     if ([tencentOAuth isSessionValid]) {
-        NSDictionary *result = [self makeResultWithUserId:tencentOAuth.openId accessToken:tencentOAuth.accessToken expirationDate:tencentOAuth.expirationDate];
+        NSDictionary *result = [self makeResultWithUserId:tencentOAuth.openId
+                                              accessToken:tencentOAuth.accessToken
+                                           expirationDate:tencentOAuth.expirationDate];
         resolve(result);
     } else {
         loginResolve = resolve;
@@ -109,73 +109,197 @@ RCT_EXPORT_METHOD(logout
     logoutReject = reject;
     [tencentOAuth logout: self];
 }
-RCT_EXPORT_METHOD(shareTextToQQ:(NSString *)text
+//必填，最长1536个字符
+RCT_EXPORT_METHOD(shareText:(NSString *)text
+                  shareScene:(QQShareScene)scene
                   :(RCTPromiseResolveBlock)resolve
                   :(RCTPromiseRejectBlock)reject) {
     shareReject = reject;
     shareResolve = resolve;
-    [self shareObjectWithData:@{@"text":text} Type:TextMessage Scene:QQ];
+    [self shareObjectWithData:@{@"text":text} Type:TextMessage Scene:scene];
 }
 
-RCT_EXPORT_METHOD(shareImageToQQ:(NSString *)image withImageType:(NSInteger)type
+RCT_EXPORT_METHOD(shareImage:(NSString *)image withImageType:(NSInteger)type
                   title:(NSString *)title
                   description:(NSString *)description
+                  shareScene:(QQShareScene)scene
                   resolve:(RCTPromiseResolveBlock)resolve
                   reject:(RCTPromiseRejectBlock)reject) {
+    shareReject = reject;
+    shareResolve = resolve;
     switch (type) {
-        case Local:
-            [self shareLocalImageFileToQQ:image title:title description:description resolve:resolve reject:reject];
+        case Local: {
+            NSData* imageData = [NSData dataWithContentsOfFile:image];
+            [self shareObjectWithData:@{@"image":imageData,
+                                        @"title":title,
+                                        @"description":description}
+                                 Type:ImageMesssage
+                                Scene:scene];
+        }
+            break;
+        case Network:{
+            NSURL* url = [NSURL URLWithString:[image stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]];
+            NSData *data = [NSData dataWithContentsOfURL:url];
+                [self shareObjectWithData:@{@"image":data,
+                                            @"title":title,
+                                            @"description":description}
+                                     Type:ImageMesssage Scene:scene];
+        }
+            break;
+        case Base64:{
+            NSData* imageData = [[NSData alloc] initWithBase64EncodedString:image options:0];
+            [self shareObjectWithData:@{@"image":imageData,
+                                        @"title":title,
+                                        @"description":description}
+                                 Type:ImageMesssage Scene:scene];
+        }
+            break;
+    }
+}
+RCT_EXPORT_METHOD(shareNews:(NSString *)url
+                  image:(NSString *)image
+                  withImageType:(NSInteger)type
+                  title:(NSString *)title
+                  description:(NSString *)description
+                  shareScene:(QQShareScene)scene
+                  resolve:(RCTPromiseResolveBlock)resolve
+                  reject:(RCTPromiseRejectBlock)reject) {
+    shareReject = reject;
+    shareResolve = resolve;
+    switch (type) {
+        case Local: {
+            NSData* imageData = [NSData dataWithContentsOfFile:image];
+            [self shareObjectWithData:@{@"url":url,
+                                        @"image":imageData,
+                                        @"title":title,
+                                        @"description":description}
+                                 Type:NewsMessageWithLocalImage
+                                Scene:scene];
+        }
             break;
         case Network:
-            [self shareNetworkImageToQQ:image title:title description:description resolve:resolve reject:reject];
+            [self shareObjectWithData:@{@"url":url,
+                                        @"image":image,
+                                        @"title":title,
+                                        @"description":description}
+                                 Type:NewsMessageWithNetworkImage
+                                Scene:scene];
             break;
-        case Base64:
-            [self shareBase64ImageToQQ:image title:title description:description resolve:resolve reject:reject];
-            break;
-        default:
-            reject(@"image Type不正确",@"image Type不正确",nil);
+        case Base64: {
+            NSData* imageData =[[NSData alloc] initWithBase64EncodedString:image options:0];;
+            [self shareObjectWithData:@{@"url":url,
+                                        @"image":imageData,
+                                        @"title":title,
+                                        @"description":description}
+                                 Type:NewsMessageWithLocalImage
+                                Scene:scene];
+        }
             break;
     }
 }
-///分享网络图片
-- (void)shareNetworkImageToQQ:(NSString *)imageUrl
-                        title:(NSString *)title
+RCT_EXPORT_METHOD(shareAudio:(NSString *)previewUrl
+                  flashUrl:(NSString *)flashUrl
+                  image:(NSString *)image
+                  withImageType:(NSInteger)type
+                  title:(NSString *)title
                   description:(NSString *)description
+                  shareScene:(QQShareScene)scene
                   resolve:(RCTPromiseResolveBlock)resolve
-                  reject :(RCTPromiseRejectBlock)reject {
+                  reject:(RCTPromiseRejectBlock)reject) {
     shareReject = reject;
     shareResolve = resolve;
-    NSURL* url = [NSURL URLWithString:[imageUrl stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]];
-    if(url) {
-        NSData *data = [NSData dataWithContentsOfURL:url];
-        [self shareObjectWithData:@{@"image":data,@"title":title,@"description":description} Type:ImageMesssage Scene:QQ];
-    }else {
-        reject(@"图片参数不正确",@"",nil);
-        shareResolve = nil;
-        shareReject = nil;
+    switch (type) {
+        case Local: {
+            NSData* imageData = [NSData dataWithContentsOfFile:image];
+            NSLog(@"image dat is %@",imageData);
+            [self shareObjectWithData:@{@"url":previewUrl,
+                                        @"flashUrl":flashUrl,
+                                        @"image":imageData,
+                                        @"title":title,
+                                        @"description":description}
+                                 Type:AudioMessage
+                                Scene:scene];
+        }
+            break;
+        case Network:{
+            NSData* imageData = [NSData dataWithContentsOfURL:[NSURL URLWithString:[image stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]]];
+            [self shareObjectWithData:@{@"url":previewUrl,
+                                        @"flashUrl":flashUrl,
+                                        @"image":imageData,
+                                        @"title":title,
+                                        @"description":description}
+                                 Type:AudioMessage
+                                Scene:scene];
+        }
+            break;
+        case Base64: {
+            NSData* imageData =[[NSData alloc] initWithBase64EncodedString:image options:0];;
+            [self shareObjectWithData:@{@"url":previewUrl,
+                                        @"flashUrl":flashUrl,
+                                        @"image":imageData,
+                                        @"title":title,
+                                        @"description":description}
+                                 Type:AudioMessage
+                                Scene:scene];
+        }
+            break;
     }
 }
-///分享本地图片
-- (void)shareLocalImageFileToQQ:(NSString *)filePath
-                          title:(NSString *)title
-                    description:(NSString *)description
-                        resolve:(RCTPromiseResolveBlock)resolve
-                         reject:(RCTPromiseRejectBlock)reject {
-    shareReject = reject;
-    shareResolve = resolve;
-    NSLog(@"path is %@",filePath);
-    NSData* image = [NSData dataWithContentsOfFile:filePath];
-    [self shareObjectWithData:@{@"image":image,@"title":title,@"description":description} Type:ImageMesssage Scene:QQ];
-}
--(void)shareBase64ImageToQQ:(NSString *)baseData
-                      title:(NSString *)title
-                description:(NSString *)description
+
+RCT_EXPORT_METHOD(shareVideo:(NSString *)previewUrl
+                  flashUrl:(NSString *)flashUrl
+                  image:(NSString *)image
+                  withImageType:(NSInteger)type
+                  title:(NSString *)title
+                  description:(NSString *)description
+                  shareScene:(QQShareScene)scene
                   resolve:(RCTPromiseResolveBlock)resolve
-                  reject:(RCTPromiseRejectBlock)reject {
+                  reject:(RCTPromiseRejectBlock)reject) {
     shareReject = reject;
     shareResolve = resolve;
-    NSData* image = [[NSData alloc] initWithBase64EncodedString:baseData options:0];
-    [self shareObjectWithData:@{@"image":image,@"title":title,@"description":description} Type:ImageMesssage Scene:QQ];
+    switch (type) {
+        case Local: {
+            NSData* imageData = [NSData dataWithContentsOfFile:image];
+            NSLog(@"image dat is %@",imageData);
+            [self shareObjectWithData:@{@"url":previewUrl,
+                                        @"flashUrl":flashUrl,
+                                        @"image":imageData,
+                                        @"title":title,
+                                        @"description":description}
+                                 Type:VideoMessage
+                                Scene:scene];
+        }
+            break;
+        case Network:{
+            NSData* imageData = [NSData dataWithContentsOfURL:[NSURL URLWithString:[image stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]]];
+            [self shareObjectWithData:@{@"url":previewUrl,
+                                        @"flashUrl":flashUrl,
+                                        @"image":imageData,
+                                        @"title":title,
+                                        @"description":description}
+                                 Type:VideoMessage
+                                Scene:scene];
+        }
+            break;
+        case Base64: {
+            NSData* imageData =[[NSData alloc] initWithBase64EncodedString:image options:0];;
+            [self shareObjectWithData:@{@"url":previewUrl,
+                                        @"flashUrl":flashUrl,
+                                        @"image":imageData,
+                                        @"title":title,
+                                        @"description":description}
+                                 Type:VideoMessage
+                                Scene:scene];
+        }
+            break;
+    }
+}
+
+-(void)shareTextToQQZone:(NSString *)text {
+    QQApiImageArrayForQZoneObject * txtObj = [QQApiImageArrayForQZoneObject objectWithimageDataArray:nil title:text];
+    SendMessageToQQReq* req = [SendMessageToQQReq reqWithContent:txtObj];
+    QQApiSendResultCode sent =[QQApiInterface SendReqToQZone:req];
+    [self handleSendResult:sent];
 }
 
 - (void)shareObjectWithData:(NSDictionary *)shareData Type:(QQShareType)type Scene:(QQShareScene) scene{
@@ -183,6 +307,18 @@ RCT_EXPORT_METHOD(shareImageToQQ:(NSString *)image withImageType:(NSInteger)type
         case TextMessage: {
             NSString* msg = [shareData objectForKey:@"text"];
             QQApiTextObject* txtObj = [QQApiTextObject objectWithText:msg];
+            [txtObj setCflag:kQQAPICtrlFlagQZoneShareOnStart];
+            switch (scene) {
+                case QQZone:
+                    [self shareTextToQQZone:msg];
+                    return;
+                case Favrites:
+                    [txtObj setCflag:kQQAPICtrlFlagQQShareFavorites];
+                    break;
+                default:
+                    [txtObj setCflag:kQQAPICtrlFlagQQShare];
+                    break;
+            }
             SendMessageToQQReq* req = [SendMessageToQQReq reqWithContent:txtObj];
             QQApiSendResultCode sent =[QQApiInterface sendReq:req];
             [self handleSendResult:sent];
@@ -192,42 +328,129 @@ RCT_EXPORT_METHOD(shareImageToQQ:(NSString *)image withImageType:(NSInteger)type
             NSData* data = [shareData objectForKey:@"image"];
             NSString* title = [shareData objectForKey:@"title"];
             NSString* description = [shareData objectForKey:@"description"];
-            QQApiImageObject* imgObj = [QQApiImageObject objectWithData:data previewImageData:data title:title description:description];
+            QQApiImageObject* imgObj = [QQApiImageObject objectWithData:data
+                                                       previewImageData:data
+                                                                  title:title
+                                                            description:description];
+            switch (scene) {
+                case QQZone:
+                    [imgObj setCflag:kQQAPICtrlFlagQZoneShareOnStart];
+                    break;
+                case Favrites:
+                    [imgObj setCflag:kQQAPICtrlFlagQQShareFavorites];
+                    break;
+                default:
+                    [imgObj setCflag:kQQAPICtrlFlagQQShare];
+                    break;
+            }
             SendMessageToQQReq* req = [SendMessageToQQReq reqWithContent:imgObj];
             QQApiSendResultCode sent =[QQApiInterface sendReq:req];
             [self handleSendResult:sent];
         }
             break;
         case NewsMessageWithLocalImage:{
-            NSString *path = [[[NSBundle mainBundle] resourcePath] stringByAppendingPathComponent:@"news.jpg"];
-            NSData* data = [NSData dataWithContentsOfFile:path];
-            NSURL* url = [NSURL URLWithString:@""];
-            
-            QQApiNewsObject* newsObj = [QQApiNewsObject objectWithURL:url title:@"" description:@"" previewImageData:data];
+            NSData* data = [shareData objectForKey:@"image"];
+            NSURL* url = [NSURL URLWithString:[[shareData objectForKey:@"url"] stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]];
+            NSString* title = [shareData objectForKey:@"title"];
+            NSString* description = [shareData objectForKey:@"description"];
+            QQApiNewsObject* newsObj = [QQApiNewsObject objectWithURL:url
+                                                                title:title
+                                                          description:description
+                                                     previewImageData:data];
+            switch (scene) {
+                case QQZone:
+                    [newsObj setCflag:kQQAPICtrlFlagQZoneShareOnStart];
+                    break;
+                case Favrites:
+                    [newsObj setCflag:kQQAPICtrlFlagQQShareFavorites];
+                    break;
+                default:
+                    [newsObj setCflag:kQQAPICtrlFlagQQShare];
+                    break;
+            }
             SendMessageToQQReq* req = [SendMessageToQQReq reqWithContent:newsObj];
             QQApiSendResultCode sent =[QQApiInterface sendReq:req];
             [self handleSendResult:sent];
         }
             break;
         case NewsMessageWithNetworkImage:{
-            NSURL *previewURL = [NSURL URLWithString:@"http://img1.gtimg.com/sports/pics/hv1/87/16/1037/67435092.jpg"];
-            NSURL* url = [NSURL URLWithString:@""];
-            QQApiNewsObject* newsObj = [QQApiNewsObject objectWithURL:url title:@"" description:@"" previewImageURL:previewURL];
+            NSURL* previewURL = [NSURL URLWithString:[shareData objectForKey:@"image"]];
+            NSURL* url = [NSURL URLWithString:[[shareData objectForKey:@"url"] stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]];
+            NSString* title = [shareData objectForKey:@"title"];
+            NSString* description = [shareData objectForKey:@"description"];
+            QQApiNewsObject* newsObj = [QQApiNewsObject objectWithURL:url
+                                                                title:title
+                                                          description:description
+                                                      previewImageURL:previewURL];
+            switch (scene) {
+                case QQZone:
+                    [newsObj setCflag:kQQAPICtrlFlagQZoneShareOnStart];
+                    break;
+                case Favrites:
+                    [newsObj setCflag:kQQAPICtrlFlagQQShareFavorites];
+                    break;
+                default:
+                    [newsObj setCflag:kQQAPICtrlFlagQQShare];
+                    break;
+            }
             SendMessageToQQReq* req = [SendMessageToQQReq reqWithContent:newsObj];
             QQApiSendResultCode sent =[QQApiInterface sendReq:req];
             [self handleSendResult:sent];
         }
             break;
         case AudioMessage:{
-            NSString *path = [[[NSBundle mainBundle] resourcePath] stringByAppendingPathComponent:@"audio.jpg"];
-            NSData* data = [NSData dataWithContentsOfFile:path];
-            NSURL* url = [NSURL URLWithString:@""];
-            QQApiAudioObject* audioObj = [QQApiAudioObject objectWithURL:url title:@"" description:@"" previewImageData:data];
+            NSData* data = [shareData objectForKey:@"image"];
+            NSURL* url = [NSURL URLWithString:[shareData objectForKey:@"url"]];
+            NSString* title = [shareData objectForKey:@"title"];
+            NSString* description = [shareData objectForKey:@"description"];
+            NSURL* flashUrl = [NSURL URLWithString:[shareData objectForKey:@"url"]];
+            QQApiAudioObject* audioObj = [QQApiAudioObject objectWithURL:url
+                                                                   title:title
+                                                             description:description
+                                                        previewImageData:data];
+            [audioObj setFlashURL:flashUrl];
+            switch (scene) {
+                case QQZone:
+                    [audioObj setCflag:kQQAPICtrlFlagQZoneShareOnStart];
+                    break;
+                case Favrites:
+                    [audioObj setCflag:kQQAPICtrlFlagQQShareFavorites];
+                    break;
+                default:
+                    [audioObj setCflag:kQQAPICtrlFlagQQShare];
+                    break;
+            }
             SendMessageToQQReq* req = [SendMessageToQQReq reqWithContent:audioObj];
             QQApiSendResultCode sent =[QQApiInterface sendReq:req];
             [self handleSendResult:sent];
         }
             break;
+        case VideoMessage:{
+            NSData* data = [shareData objectForKey:@"image"];
+            NSURL* url = [NSURL URLWithString:[shareData objectForKey:@"url"]];
+            NSString* title = [shareData objectForKey:@"title"];
+            NSString* description = [shareData objectForKey:@"description"];
+            NSURL* flashUrl = [NSURL URLWithString:[shareData objectForKey:@"url"]];
+            QQApiVideoObject* videoObj = [QQApiVideoObject objectWithURL:url
+                                                                   title:title
+                                                             description:description
+                                                        previewImageData:data];
+            [videoObj setFlashURL:flashUrl];
+            switch (scene) {
+                case QQZone:
+                    [videoObj setCflag:kQQAPICtrlFlagQZoneShareOnStart];
+                    break;
+                case Favrites:
+                    [videoObj setCflag:kQQAPICtrlFlagQQShareFavorites];
+                    break;
+                default:
+                    [videoObj setCflag:kQQAPICtrlFlagQQShare];
+                    break;
+            }
+            SendMessageToQQReq* req = [SendMessageToQQReq reqWithContent:videoObj];
+            QQApiSendResultCode sent =[QQApiInterface sendReq:req];
+            [self handleSendResult:sent];
+        }
         default:
             break;
     }
@@ -236,6 +459,8 @@ RCT_EXPORT_METHOD(shareImageToQQ:(NSString *)image withImageType:(NSInteger)type
 - (void)handleSendResult:(QQApiSendResultCode)sendResult {
     switch (sendResult) {
         case EQQAPISENDSUCESS:
+            break;
+        case EQQAPIAPPSHAREASYNC:
             break;
         case EQQAPIAPPNOTREGISTED: {
             NSLog(@"App未注册");
@@ -293,8 +518,26 @@ RCT_EXPORT_METHOD(shareImageToQQ:(NSString *)image withImageType:(NSInteger)type
             }
             break;
         }
+        case EQQAPIQZONENOTSUPPORTTEXT:{
+            NSLog(@"QQZone不支持QQApiTextObject分享");
+            if(shareReject) {
+                shareReject(@"100",@"QQZone不支持QQApiTextObject分享",nil);
+                shareReject = nil;
+                shareResolve = nil;
+            }
+            break;
+        }
+        case EQQAPIQZONENOTSUPPORTIMAGE:{
+            NSLog(@"QQZone不支持QQApiImageObject分享");
+            if(shareReject) {
+                shareReject(@"100",@"QQZone不支持QQApiImageObject分享",nil);
+                shareReject = nil;
+                shareResolve = nil;
+            }
+            break;
+        }
         default: {
-            NSLog(@"发生其他错误");
+            NSLog(@"发生其他错误 is %ld",sendResult);
             if(shareReject) {
                 shareReject(@"100",@"发生其他错误",nil);
                 shareReject = nil;
@@ -340,11 +583,9 @@ RCT_EXPORT_METHOD(shareImageToQQ:(NSString *)image withImageType:(NSInteger)type
 }
 #pragma mark - QQApiInterfaceDelegate
 - (void)onReq:(QQBaseReq *)req {
-    NSLog(@"req is %@",req);
 }
 
 - (void)onResp:(QQBaseResp *)resp {
-    NSLog(@" ----resp %@",resp.result);
     switch ([resp.result integerValue]) {
         case 0: {
             if(shareReject){
@@ -373,13 +614,14 @@ RCT_EXPORT_METHOD(shareImageToQQ:(NSString *)image withImageType:(NSInteger)type
 }
 
 - (void)isOnlineResponse:(NSDictionary *)response {
-    NSLog(@"response is %@",response);
 }
 
 #pragma mark - TencentSessionDelegate
 - (void)tencentDidLogin {
     if (tencentOAuth.accessToken && 0 != [tencentOAuth.accessToken length] && loginResolve) {
-        NSDictionary *result = [self makeResultWithUserId:tencentOAuth.openId accessToken:tencentOAuth.accessToken expirationDate:tencentOAuth.expirationDate];
+        NSDictionary *result = [self makeResultWithUserId:tencentOAuth.openId
+                                              accessToken:tencentOAuth.accessToken
+                                           expirationDate:tencentOAuth.expirationDate];
         loginResolve(result);
         loginReject = nil;
     } else {
@@ -407,7 +649,6 @@ RCT_EXPORT_METHOD(shareImageToQQ:(NSString *)image withImageType:(NSInteger)type
 }
 
 - (void)tencentDidNotNetWork {
-    NSLog(@"发生网络问题");
     if (loginReject) {
         loginReject(QQ_LOGIN_NETWORK_ERROR,QQ_LOGIN_NETWORK_ERROR,nil);
         loginResolve = nil;
