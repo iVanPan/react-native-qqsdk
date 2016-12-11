@@ -26,24 +26,11 @@ var qqSchemes = ['mqqapi','mqq','mqqOpensdkSSoLogin','mqqconnect','mqqopensdkdat
   'mqzonev2','mqzoneshare','wtloginqzone','mqzonewx','mqzoneopensdkapiV2',
   'mqzoneopensdkapi19','mqzoneopensdkapi', 'mqzoneopensdk','mqqopensdkapiv4'];
 
-addRCTQQSDKHeader();
 addRCTLinkManagerHeader();
 addLinkFunction();
-addURLTypesForTencentSDK();
+addAppID();
 addQueriesSchemes();
-addAppIdToGradle();
 
-function addRCTQQSDKHeader() {
-  var qqSDKHeaderImportStatement = `#import "RCTQQSDK.h"`;
-  if (~appDelegateContents.indexOf(qqSDKHeaderImportStatement)) {
-      console.log(`"RCTQQSDK.h" header already imported.`);
-  } else {
-      var appDelegateHeaderImportStatement = `#import "AppDelegate.h"`;
-      appDelegateContents = appDelegateContents.replace(appDelegateHeaderImportStatement,
-          `${appDelegateHeaderImportStatement}\n${qqSDKHeaderImportStatement}`);
-  }
-  fs.writeFileSync(appDelegatePath, appDelegateContents);
-}
 
 function addRCTLinkManagerHeader() {
   var linkHeaderImportStatement = `#import "RCTLinkingManager.h"`;
@@ -74,11 +61,11 @@ function addLinkFunction() {
   fs.writeFileSync(appDelegatePath, appDelegateContents);
 }
 
-function addURLTypesForTencentSDK() {
+function addAppID() {
   var parsedInfoPlist = plist.parse(plistContents);
   var types = parsedInfoPlist.CFBundleURLTypes;
   types ? (skipAddAppId = findAppID(types) === -1? false : true):addTypes = true;
-  addAppID();
+  addURLTypesForTencentSDK();
 }
 
 function findAppID(types) {
@@ -89,7 +76,7 @@ function findAppID(types) {
   });
 }
 
-function addAppID() {
+function addURLTypesForTencentSDK() {
   if (skipAddAppId) {
     console.log("发现已经存在AppID");
   } else {
@@ -111,6 +98,8 @@ function addAppID() {
       parsedInfoPlist.CFBundleURLTypes.push(qqAppId);
       plistContents = plist.build(parsedInfoPlist);
       fs.writeFileSync(plistPath, plistContents);
+    }).then(function(){
+      addAppIdToGradle()
     });
   }
 }
