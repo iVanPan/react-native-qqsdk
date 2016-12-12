@@ -1,6 +1,7 @@
 var fs = require('fs');
 var glob = require("glob");
 var inquirer = require('inquirer');
+var xcode = require('xcode');
 var path = require("path");
 var plist = require("plist");
 var _ = require('lodash');
@@ -8,6 +9,7 @@ var package = require('../../../../package.json');
 
 var ignoreNodeModules = { ignore: "node_modules/**" };
 var appDelegatePaths = glob.sync("**/AppDelegate.m", ignoreNodeModules);
+
 
 // Fix for https://github.com/Microsoft/react-native-code-push/issues/477
 // Typical location of AppDelegate.m for newer RN versions: $PROJECT_ROOT/ios/<project_name>/AppDelegate.m
@@ -30,7 +32,7 @@ addRCTLinkManagerHeader();
 addLinkFunction();
 addAppID();
 addQueriesSchemes();
-
+addFrameworkAndSearchPath()
 
 function addRCTLinkManagerHeader() {
   var linkHeaderImportStatement = `#import "RCTLinkingManager.h"`;
@@ -124,22 +126,69 @@ function findFileByAppName(array, appName) {
     return null;
 }
 function addAppIdToGradle() {
-var buildGradlePath =path.join(__dirname,'../','../','./android/build.gradle');
-var buildGradleContents = fs.readFileSync(buildGradlePath, "utf8");
-var appIDLink = "${QQ_APP_ID}";
-  if (~buildGradleContents.indexOf(appIDLink)) {
-  inquirer.prompt([{
-    type: "input",
-    name: "AppID",
-    message: "What is your Tencent SDK AppID for Android (hit <ENTER> to ignore)"
-  }]).then(function(answer) {
-    var key = answer.AppID || "app-id-here";
-    buildGradleContents = buildGradleContents.replace(appIDLink,
-      `${key}`);
-    fs.writeFileSync(buildGradlePath, buildGradleContents);
+  var buildGradlePath =path.join(__dirname,'../','../','./android/build.gradle');
+  var buildGradleContents = fs.readFileSync(buildGradlePath, "utf8");
+  var appIDLink = "${QQ_APP_ID}";
+    if (~buildGradleContents.indexOf(appIDLink)) {
+    inquirer.prompt([{
+      type: "input",
+      name: "AppID",
+      message: "What is your Tencent SDK AppID for Android (hit <ENTER> to ignore)"
+    }]).then(function(answer) {
+      var key = answer.AppID || "app-id-here";
+      buildGradleContents = buildGradleContents.replace(appIDLink,
+        `${key}`);
+      fs.writeFileSync(buildGradlePath, buildGradleContents);
+    });
+  } else {
+    console.log('请在react-native-qqsdk中手动设置Android App ID');
+  }
+}
+
+function addFrameworkAndSearchPath() {
+  var projectPath = glob.sync("**/project.pbxproj", ignoreNodeModules)[0];
+  var project = xcode.project(projectPath);
+  var frameworkPath = path.join(__dirname,'../node_modules/react-native-qqsdk/ios/RCTQQSDK/TencentOpenAPI.framework');
+  var project_dir = path.join(__dirname);
+  var project_relative = path.relative(project_dir, frameworkPath);
+    project.parse(function (error) {
+      if (error) {
+        console.log('xcode project error is', error);
+      } else {
+        const target = project.getFirstTarget().uuid;
+        project.addFramework(project_relative,{customFramework: false, target:target});
+        addSearchPaths(project,'"$(SRCROOT)/../node_modules/react-native/Libraries/**"','"$(SRCROOT)/../node_modules/react-native-qqsdk/ios/RCTQQSDK/**"');
+        fs.writeFileSync(projectPath, project.writeSync());
+      }
+    });
+}
+
+function addSearchPaths(project, headerSearchPath, frameworkSearchPath) {
+  const config = project.pbxXCBuildConfigurationSection();
+  const INHERITED = '"$(inherited)"';
+  Object
+    .keys(config)
+    .filter(ref => ref.indexOf('_comment') === -1)
+    .forEach(ref => {
+      const buildSettings = config[ref].buildSettings;
+      const shouldVisitBuildSettings = (
+      Array.isArray(buildSettings.HEADER_SEARCH_PATHS) ?
+        buildSettings.HEADER_SEARCH_PATHS :
+        []).filter(path => path.indexOf('react-native/React/**') >= 0).length > 0;
+    if (shouldVisitBuildSettings) {
+     var headerIndex = _.findIndex(buildSettings['HEADER_SEARCH_PATHS'], function(path) { return path == headerSearchPath; });
+     if (headerIndex === -1) {
+       buildSettings['HEADER_SEARCH_PATHS'].push(headerSearchPath);
+     }
+      if (!buildSettings['FRAMEWORK_SEARCH_PATHS']
+        || buildSettings['FRAMEWORK_SEARCH_PATHS'] === INHERITED) {
+        buildSettings['FRAMEWORK_SEARCH_PATHS'] = [INHERITED];
+      }
+      var framworkIndex = _.findIndex(buildSettings['FRAMEWORK_SEARCH_PATHS'], function(path) { return path == frameworkSearchPath; });
+      if (framworkIndex === -1) {
+        buildSettings['FRAMEWORK_SEARCH_PATHS'].push(frameworkSearchPath);
+      }
+    }
   });
-} else {
-  console.log('请在react-native-qqsdk中手动设置Android App ID');
-}
-}
+};
 

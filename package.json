@@ -34,6 +34,7 @@
     "inquirer": "1.1.2",
     "plist": "1.2.0",
     "lodash": "^4.17.2",
+    "xcode": "^0.8.9",
     "path": "^0.12.7"
   },
   "rnpm": {
@@ -50,7 +51,8 @@
       ]
     },
     "commands": {
-      "postlink": "node node_modules/react-native-qqsdk/scripts/postlink/postlink"
+      "postlink": "node node_modules/react-native-qqsdk/scripts/postlink/postlink",
+      "postunlink": "node node_modules/react-native-qqsdk/scripts/postunlink/postunlink"
     }
   }
 }
