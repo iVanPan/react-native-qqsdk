@@ -1,10 +1,11 @@
 var fs = require('fs');
-var glob = require("glob");
+var glob = require('glob');
 var inquirer = require('inquirer');
-var path = require("path");
-var plist = require("plist");
+var path = require('path');
+var plist = require('plist');
 var xcode = require('xcode');
 var _ = require('lodash');
+var pbxFile = require('../pbxFile');
 var package = require('../../../../package.json');
 
 var ignoreNodeModules = { ignore: "node_modules/**" };
@@ -15,7 +16,6 @@ var appDelegatePaths = glob.sync("**/AppDelegate.m", ignoreNodeModules);
 // Let's try to find that path by filtering the whole array for any path containing <project_name>
 // If we can't find it there, play dumb and pray it is the first path we find.
 var appDelegatePath = findFileByAppName(appDelegatePaths, package ? package.name : null) || appDelegatePaths[0];
-// Glob only allows foward slashes in patterns: https://www.npmjs.com/package/glob#windows
 var plistPath = glob.sync(path.join(path.dirname(appDelegatePath), "*Info.plist").replace(/\\/g, "/"), ignoreNodeModules)[0];
 var appDelegateContents = fs.readFileSync(appDelegatePath, "utf8");
 var plistContents = fs.readFileSync(plistPath, "utf8");
@@ -44,17 +44,18 @@ function removeRCTLinkManagerHeader() {
 }
 
 function removeLinkFunction() {
-  var linkfunction = `- (BOOL)application:(UIApplication *)application openURL:(NSURL *)url
+  var linkFunctionName =  `- (BOOL)application:(UIApplication *)application openURL:(NSURL *)url
+    sourceApplication:(NSString *)sourceApplication annotation:(id)annotation`.replace(/(\r\n|\n|\r)/gm,"").replace(/\s/g,'').trim();
+  var linkFunction = `- (BOOL)application:(UIApplication *)application openURL:(NSURL *)url
     sourceApplication:(NSString *)sourceApplication annotation:(id)annotation
   {
     return [RCTLinkingManager application:application openURL:url
                         sourceApplication:sourceApplication annotation:annotation];
   }`;
-  if (~appDelegateContents.indexOf(linkfunction)) {
-      console.log(`link function already imported.`);
-      appDelegateContents = appDelegateContents.replace(linkfunction,'');
-  } 
-  fs.writeFileSync(appDelegatePath, appDelegateContents);
+  if (~appDelegateContents.replace(/(\r\n|\n|\r)/gm,"").replace(/\s/g,'').trim().indexOf(linkFunctionName)) {
+      console.log(`如果没有使用RCTLinking的功能，你所使用第三方库也没有依赖RCTLinkingManager，你可以删除在AppDelegate.m中RCTLinkingManager相关方法`);
+      console.log('相关内容你可以查看 react native 文档:http://facebook.github.io/react-native/docs/linking.html');
+  }
 }
 
 function removeAppID() {
@@ -84,7 +85,7 @@ function findAppID(types) {
 function removeQueriesSchemes() {
   var parsedInfoPlist = plist.parse(plistContents);
   var schemes = parsedInfoPlist.LSApplicationQueriesSchemes;
-  parsedInfoPlist.LSApplicationQueriesSchemes = _.dropWhile(schemes,qqSchemes) || schemes;
+  parsedInfoPlist.LSApplicationQueriesSchemes = _.difference(schemes,qqSchemes);
   plistContents = plist.build(parsedInfoPlist);
   fs.writeFileSync(plistPath, plistContents);
 }
@@ -111,8 +112,13 @@ function removeFrameworkAndSearchPath() {
     if (error) {
       console.log('xcode project error is', error);
     } else {
-      const target = project.getFirstTarget().uuid;
-      project.removeFramework(project_relative,{customFramework: false, target:target});
+      var target = project.getFirstTarget().uuid;
+      var file = new pbxFile(project_relative,{customFramework: true, target:target});
+      file.target = target;
+      project.removeFromPbxBuildFileSection(file);          // PBXBuildFile
+      project.removeFromPbxFileReferenceSection(file);      // PBXFileReference
+      project.removeFromFrameworksPbxGroup(file);           // PBXGroup
+      project.removeFromPbxFrameworksBuildPhase(file);      // PBXFrameworksBuildPhase
       removeSearchPaths(project,'"$(SRCROOT)/../node_modules/react-native/Libraries/**"','"$(SRCROOT)/../node_modules/react-native-qqsdk/ios/RCTQQSDK/**"');
       fs.writeFileSync(projectPath, project.writeSync());
     }

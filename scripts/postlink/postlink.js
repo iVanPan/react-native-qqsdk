@@ -2,9 +2,10 @@ var fs = require('fs');
 var glob = require("glob");
 var inquirer = require('inquirer');
 var xcode = require('xcode');
-var path = require("path");
-var plist = require("plist");
+var path = require('path');
+var plist = require('plist');
 var _ = require('lodash');
+var pbxFile = require('../pbxFile');
 var package = require('../../../../package.json');
 
 var ignoreNodeModules = { ignore: "node_modules/**" };
@@ -16,7 +17,6 @@ var appDelegatePaths = glob.sync("**/AppDelegate.m", ignoreNodeModules);
 // Let's try to find that path by filtering the whole array for any path containing <project_name>
 // If we can't find it there, play dumb and pray it is the first path we find.
 var appDelegatePath = findFileByAppName(appDelegatePaths, package ? package.name : null) || appDelegatePaths[0];
-// Glob only allows foward slashes in patterns: https://www.npmjs.com/package/glob#windows
 var plistPath = glob.sync(path.join(path.dirname(appDelegatePath), "*Info.plist").replace(/\\/g, "/"), ignoreNodeModules)[0];
 var appDelegateContents = fs.readFileSync(appDelegatePath, "utf8");
 var plistContents = fs.readFileSync(plistPath, "utf8");
@@ -28,11 +28,13 @@ var qqSchemes = ['mqqapi','mqq','mqqOpensdkSSoLogin','mqqconnect','mqqopensdkdat
   'mqzonev2','mqzoneshare','wtloginqzone','mqzonewx','mqzoneopensdkapiV2',
   'mqzoneopensdkapi19','mqzoneopensdkapi', 'mqzoneopensdk','mqqopensdkapiv4'];
 
+
 addRCTLinkManagerHeader();
 addLinkFunction();
+addFrameworkAndSearchPath()
 addAppID();
 addQueriesSchemes();
-addFrameworkAndSearchPath()
+
 
 function addRCTLinkManagerHeader() {
   var linkHeaderImportStatement = `#import "RCTLinkingManager.h"`;
@@ -47,18 +49,20 @@ function addRCTLinkManagerHeader() {
 }
 
 function addLinkFunction() {
-  var linkfunction = `- (BOOL)application:(UIApplication *)application openURL:(NSURL *)url
+  var linkFunctionName =  `- (BOOL)application:(UIApplication *)application openURL:(NSURL *)url
+    sourceApplication:(NSString *)sourceApplication annotation:(id)annotation`.replace(/(\r\n|\n|\r)/gm,"").replace(/\s/g,'').trim();
+  var linkFunction = `- (BOOL)application:(UIApplication *)application openURL:(NSURL *)url
     sourceApplication:(NSString *)sourceApplication annotation:(id)annotation
   {
     return [RCTLinkingManager application:application openURL:url
                         sourceApplication:sourceApplication annotation:annotation];
   }`;
-  if (~appDelegateContents.indexOf(linkfunction)) {
+  if (~appDelegateContents.replace(/(\r\n|\n|\r)/gm,"").replace(/\s/g,'').trim().indexOf(linkFunctionName)) {
       console.log(`link function already imported.`);
   } else {
       var appDelegateEndStatement = `@end`;
       appDelegateContents = appDelegateContents.replace(appDelegateEndStatement,
-          `${linkfunction}\n${appDelegateEndStatement}`);
+          `${linkFunction}\n${appDelegateEndStatement}`);
   }
   fs.writeFileSync(appDelegatePath, appDelegateContents);
 }
@@ -141,7 +145,7 @@ function addAppIdToGradle() {
       fs.writeFileSync(buildGradlePath, buildGradleContents);
     });
   } else {
-    console.log('请在react-native-qqsdk中手动设置Android App ID');
+    console.log('App ID 可能已存在，如果要进行修改请在react-native-qqsdk的Gradle文件中手动修改Android App ID');
   }
 }
 
@@ -155,8 +159,16 @@ function addFrameworkAndSearchPath() {
       if (error) {
         console.log('xcode project error is', error);
       } else {
-        const target = project.getFirstTarget().uuid;
-        project.addFramework(project_relative,{customFramework: false, target:target});
+        var target = project.getFirstTarget().uuid;
+        var file = new pbxFile(project_relative,{customFramework: true, target:target});
+        file.uuid = project.generateUuid();
+        file.fileRef = project.generateUuid();
+        file.target = target;
+        if (project.hasFile(file.path)) return false;
+         project.addToPbxBuildFileSection(file);        // PBXBuildFile
+         project.addToPbxFileReferenceSection(file);    // PBXFileReference
+         project.addToFrameworksPbxGroup(file);         // PBXGroup
+         project.addToPbxFrameworksBuildPhase(file);    // PBXFrameworksBuildPhase
         addSearchPaths(project,'"$(SRCROOT)/../node_modules/react-native/Libraries/**"','"$(SRCROOT)/../node_modules/react-native-qqsdk/ios/RCTQQSDK/**"');
         fs.writeFileSync(projectPath, project.writeSync());
       }
