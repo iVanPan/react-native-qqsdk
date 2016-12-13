@@ -123,7 +123,10 @@ public class MainApplication extends Application implements ReactApplication {
 ##Documentation
 
 ###Support API
-
+1. ssoLogin
+2. Logout
+3. checkClientInstalled
+4. Share(see form below)
 
 |      Platform      |   iOS  |   iOS     |     iOS      | Android |  Android  |    Android   |
 |--------------------|--------|-----------|--------------|---------|-----------|--------------|
@@ -132,6 +135,8 @@ public class MainApplication extends Application implements ReactApplication {
 |      Image         |    √   |     √     |      √       |    √    |     √     |      √       |
 |      News 	     |    √   |     √     |      √       |    √    |     √     |      √       |
 |      Audio         |    √   |     √     |      √       |    √    |     √     |      √       |
+
+
 
 ###Error Code
 
