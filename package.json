@@ -1,6 +1,6 @@
 {
   "name": "react-native-qqsdk",
-  "version": "0.1.0",
+  "version": "0.6.0",
   "description": "react-native wrapper for qq sdk",
   "main": "index.js",
   "scripts": {
@@ -9,12 +9,12 @@
   "author": "https://github.com/iVanPan",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/iVanPan/Cordova_QQ/issues"
+    "url": "https://github.com/iVanPan/react-native-qqsdk/issues"
   },
-  "homepage": "https://github.com/iVanPan/Cordova_QQ",
+  "homepage": "https://github.com/iVanPan/react-native-qqsdk",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/iVanPan/Cordova_QQ.git"
+    "url": "git+https://github.com/iVanPan/react-native-qqsdk.git"
   },
   "keywords": [
     "ecosystem:react-native",

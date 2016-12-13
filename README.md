@@ -6,13 +6,12 @@
 A React Native wrapper around the Tencent QQ SDK for Android and iOS. Provides access to QQ ssoLogin, QQ Sharing, QQ Zone Sharing etc.
 ## Table of Contents
 
-- [Feature](#Feature)
-- [Installation](#Installation)
-  - [RNPM](#RNPM)
-  - [Manual](#Manual)
-  	- [iOS Setup](#iOS Setup)
-  	- [Android Setup](#Android Setup)
-- [Usage](#Usage)
+- [Feature](#feature)
+- [Installation](#installation)
+  - [RNPM](#rnmp)
+  - [Manual](#manual)
+  	- [iOS Setup](#ios-setup)
+  	- [Android Setup](#android-setup)
 
 
 
