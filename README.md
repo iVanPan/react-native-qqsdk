@@ -127,7 +127,7 @@ public class MainApplication extends Application implements ReactApplication {
 |      Platform      |   iOS  |   iOS     |     iOS      | Android |  Android  |    Android   |
 |--------------------|--------|-----------|--------------|---------|-----------|--------------|
 |      ShareScene    |   QQ   |   QQZone  |  QQ Favorite |    QQ   |   QQZone  |  QQ Favorite |
-|      Text 	     |    √   |     √     |      √       |    ✕    |     √     |      √       |
+|      Text 	     |    √   |     √     |      √       |    ✕    |     √     |      √       |
 |      Image         |    √   |     √     |      √       |    √    |     √     |      √       |
 |      News 	     |    √   |     √     |      √       |    √    |     √     |      √       |
 |      Audio         |    √   |     √     |      √       |    √    |     √     |      √       |
