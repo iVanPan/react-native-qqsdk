@@ -12,7 +12,8 @@ A React Native wrapper around the Tencent QQ SDK for Android and iOS. Provides a
   - [Manual](#manual)
   	- [iOS Setup](#ios-setup)
   	- [Android Setup](#android-setup)
-
+- [Documentation](#documentation)
+  - [Support API](#support-api)
 
 
 
@@ -118,5 +119,14 @@ public class MainApplication extends Application implements ReactApplication {
     };
 }
 ```
+##Documentation
 
+###Support API
 
+|      Platform      |             iOS                   |            Android                 |
+|      ShareScene    |   QQ   |   QQZone  | QQ Favorite  |    QQ   |   QQZone  | QQ Favorite  |
+|--------------------|-----------------------------------|------------------------------------|
+|      Text 	     |    √   |     √     |      √       |    ✕    |     √     |      √       |
+|      Image         |    √   |     √     |      √       |    √    |     √     |      √       |
+|      News 	     |    √   |     √     |      √       |    √    |     √     |      √       |
+|      Audio         |    √   |     √     |      √       |    √    |     √     |      √       |
