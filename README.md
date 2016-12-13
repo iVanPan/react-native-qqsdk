@@ -12,8 +12,9 @@ A React Native wrapper around the Tencent QQ SDK for Android and iOS. Provides a
   - [Manual](#manual)
   	- [iOS Setup](#ios-setup)
   	- [Android Setup](#android-setup)
-- [Documentation](#documentation)
+- [Documentation](#documentation) 		
   - [Support API](#support-api)
+  - [Error Code](#error-code)
 
 
 
@@ -131,3 +132,27 @@ public class MainApplication extends Application implements ReactApplication {
 |      Image         |    √   |     √     |      √       |    √    |     √     |      √       |
 |      News 	     |    √   |     √     |      √       |    √    |     √     |      √       |
 |      Audio         |    √   |     √     |      √       |    √    |     √     |      √       |
+
+###Error Code
+
+| code        |                        explanation                                   |
+|-------------|----------------------------------------------------------------------|
+|      404    |                        QQ client not found                           |
+|      405    |                        Android Activity not found                    |
+|      500    |             QQ share (QQSDKPackage,QQZone QQ Favorite) error         |
+|      503    |             QQ share (QQSDKPackage,QQZone QQ Favorite) cancelled     |
+|      600    |                        QQ ssoLogin error                             |
+|      603    |                        ssoLogin cancelled                            |
+
+
+
+
+
+
+
+
+
+
+
+
+
