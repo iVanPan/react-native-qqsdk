@@ -137,7 +137,7 @@ public class MainApplication extends Application implements ReactApplication {
 4. Share(see form below)
 
 |      Platform      |   iOS  |   iOS     |     iOS      | Android |  Android  |    Android   |
-|--------------------|--------|-----------|--------------|---------|-----------|--------------|
+|        :---:       | :---:  |   :---:   |    :---:     |   :---: |    :---:  |     :---:    |
 |      ShareScene    |   QQ   |   QQZone  |  QQ Favorite |    QQ   |   QQZone  |  QQ Favorite |
 |      Text 	     |    √   |     √     |      √       |    ✕    |     √     |      √       |
 |      Image         |    √   |     √     |      √       |    √    |     √     |      √       |
