@@ -13,7 +13,7 @@ A React Native wrapper around the Tencent QQ SDK for Android and iOS. Provides a
   	- [iOS Setup](#ios-setup)
   	- [Android Setup](#android-setup)
 - [Documentation](#documentation) 		
-  - [Support API](#support-api)
+  - [Support API](#support-api)
   - [Error Code](#error-code)
 
 
