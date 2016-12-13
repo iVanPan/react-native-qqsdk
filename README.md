@@ -195,7 +195,7 @@ QQ.shareText("分享文字",QQ.shareScene.QQ)
   ```js
 import * as QQ from "react-native-qqsdk";
 const imgUrl = "https://y.gtimg.cn/music/photo_new/T001R300x300M000003Nz2So3XXYek.jpg";
-QQ.shareImage(imgUrl,QQ.imageType.Network,'分享图片','分享结果',QQ.shareScene.QQ)
+QQ.shareImage(imgUrl,QQ.imageType.Network,'分享标题','分享描述',QQ.shareScene.QQ)
   .then((result)=>{console.log('result is', result)})
   .catch((error)=>{console.log('error is', error)});
 
@@ -204,7 +204,7 @@ QQ.shareImage(imgUrl,QQ.imageType.Network,'分享图片','分享结果',QQ.share
   ```js
 import * as QQ from "react-native-qqsdk";
 import resolveAssetSource from 'resolveAssetSource';
-QQ.shareNews('https://facebook.github.io/react-native/',resolveAssetSource(require('./news.jpg')).uri,QQ.imageType.Local,'分享新闻','新闻分享结果',QQ.shareScene.QQ)
+QQ.shareNews('https://facebook.github.io/react-native/',resolveAssetSource(require('./news.jpg')).uri,QQ.imageType.Local,'分享新闻标题','分享新闻描述',QQ.shareScene.QQ)
 .then((result)=>{console.log('result is', result)})
 .catch((error)=>{console.log('error is', error)});
 
