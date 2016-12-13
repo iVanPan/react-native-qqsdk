@@ -57,8 +57,8 @@ Add a new value, `$(SRCROOT)/../node_modules/react-native-qqsdk/ios/RCTQQSDK` an
 8. Under the "Info" tab of your project configuration, find the "URL Types" section and add your app Id.
 
 9. Under the "Info" tab of your project configuration, add LSApplicationQueriesSchemes For QQ SDK.
-
-10.add following code to your AppDelegate.m 
+	![Add LSApplicationQueriesSchemes](https://github.com/iVanPan/react-native-qqsdk/blob/master/asset/%E5%B1%8F%E5%B9%95%E5%BF%AB%E7%85%A7%202016-12-13%2013.47.15.png)
+10. add following code to your AppDelegate.m 
 ```objectiv-c
 ...
 #import "RCTLinkingManager.h"
