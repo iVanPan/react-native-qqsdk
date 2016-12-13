@@ -8,13 +8,21 @@ A React Native wrapper around the Tencent QQ SDK for Android and iOS. Provides a
 
 - [Feature](#feature)
 - [Installation](#installation)
-  - [RNPM](#rnmp)
+  - [RNPM](#rnpm)
   - [Manual](#manual)
   	- [iOS Setup](#ios-setup)
   	- [Android Setup](#android-setup)
 - [Documentation](#documentation) 		
   - [Support API](#support-api)
   - [Error Code](#error-code)
+  - [Usage](#usage)
+  	- [checkClientInstalled](#checkclientinstalled)
+	- [ssoLogin](#ssologin)
+	- [logout](#logout)
+	- [shareText](#sharetext)
+	- [shareImage](#shareimage)
+	- [shareNews](#sharenews)
+	- [shareAudio](#shareaudio)
 
 
 
@@ -150,11 +158,68 @@ public class MainApplication extends Application implements ReactApplication {
 |      603    |                        ssoLogin cancelled                            |
 
 
+###Usage
+#####checkClientInstalled
+  ```js
+import * as QQ from "react-native-qqsdk";
+QQ.isQQClientInstalled()
+  .then(()=>{console.log('Installed')})
+  .catch(()=>{console.log('not installed')});
 
+  ```
+#####ssoLogin
+  ```js
+import * as QQ from "react-native-qqsdk";
+QQ.ssoLogin()
+  .then((result)=>{'result is', result})
+  .catch((error)=>{console.log('error is', error)});
 
+  ```
+#####logout
+  ```js
+import * as QQ from "react-native-qqsdk";
+QQ.logout()
+  .then((result)=>{'result is', result})
+  .catch((error)=>{console.log('error is', error)});
 
+  ```
+#####shareText
+  ```js
+import * as QQ from "react-native-qqsdk";
+QQ.shareText("分享文字",QQ.shareScene.QQ)
+  .then((result)=>{console.log('result is', result)})
+  .catch((error)=>{console.log('error is', error)});
 
+  ```
+#####shareImage
+  ```js
+import * as QQ from "react-native-qqsdk";
+const imgUrl = "https://y.gtimg.cn/music/photo_new/T001R300x300M000003Nz2So3XXYek.jpg";
+QQ.shareImage(imgUrl,QQ.imageType.Network,'分享图片','分享结果',QQ.shareScene.QQ)
+  .then((result)=>{console.log('result is', result)})
+  .catch((error)=>{console.log('error is', error)});
 
+  ```
+#####shareNews
+  ```js
+import * as QQ from "react-native-qqsdk";
+import resolveAssetSource from 'resolveAssetSource';
+QQ.shareNews('https://facebook.github.io/react-native/',resolveAssetSource(require('./news.jpg')).uri,QQ.imageType.Local,'分享新闻','新闻分享结果',QQ.shareScene.QQ)
+.then((result)=>{console.log('result is', result)})
+.catch((error)=>{console.log('error is', error)});
+
+  ```
+#####shareAudio
+  ```js
+import * as QQ from "react-native-qqsdk";
+const audioPreviewUrl = "https://y.qq.com/portal/song/001OyHbk2MSIi4.html";
+const audioUrl = "http://stream20.qqmusic.qq.com/30577158.mp3";
+const imgUrl = "https://y.gtimg.cn/music/photo_new/T001R300x300M000003Nz2So3XXYek.jpg";
+QQ.shareAudio(audioPreviewUrl,audioUrl,imgUrl,QQ.imageType.Network,'十年','陈奕迅',QQ.shareScene.QQ)
+.then((result)=>{console.log('result is', result)})
+.catch((error)=>{console.log('error is', error)});
+
+  ```
 
 
 
