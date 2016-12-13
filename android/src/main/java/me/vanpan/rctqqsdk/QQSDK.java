@@ -66,7 +66,7 @@ public class QQSDK extends ReactContextBaseJavaModule {
     private String appId;
     private String appName;
     private Promise mPromise;
-    private static final String ACTIVITY_DOES_NOT_EXIST = "ACTIVITY_DOES_NOT_EXIST";
+    private static final String ACTIVITY_DOES_NOT_EXIST = "activity not found";
     private static final String QQ_Client_NOT_INSYALLED_ERROR = "QQ client is not installed";
     private static final String QQ_RESPONSE_ERROR = "QQ response is error";
     private static final String QQ_CANCEL_BY_USER = "cancelled by user";
@@ -197,7 +197,7 @@ public class QQSDK extends ReactContextBaseJavaModule {
                 break;
             case ShareScene.Favorite:
                 params.putInt(GameAppOperation.QQFAV_DATALINE_REQTYPE, GameAppOperation.QQFAV_DATALINE_TYPE_TEXT);
-                params.putString(GameAppOperation.QQFAV_DATALINE_TITLE, text);
+                params.putString(GameAppOperation.QQFAV_DATALINE_TITLE, appName);
                 params.putString(GameAppOperation.QQFAV_DATALINE_DESCRIPTION, text);
                 params.putString(GameAppOperation.QQFAV_DATALINE_APPNAME, appName);
                 Runnable favoritesRunnable = new Runnable() {
@@ -239,8 +239,11 @@ public class QQSDK extends ReactContextBaseJavaModule {
         if (imageType == ImageType.Network) {
             image = saveBitmapToFile(getBitmapFromURL(image));
         } else if (imageType == ImageType.Local){
-            image = dealLocalTypeFile(image);
-            Log.d("图片地址",image);
+            File file = new File(image);
+            if(!file.exists()) {
+                image = dealLocalTypeFile(image);
+                Log.d("转化后图片地址",image);
+            }
         } else if(imageType == ImageType.Base64) {
             image = saveBitmapToFile(decodeBase64ToBitmap(image));
         }
@@ -261,11 +264,14 @@ public class QQSDK extends ReactContextBaseJavaModule {
                 UiThreadUtil.runOnUiThread(qqRunnable);
                 break;
             case ShareScene.Favorite:
+                ArrayList<String> imageUrls = new ArrayList<String>();
+                imageUrls.add(image);
                 params.putInt(GameAppOperation.QQFAV_DATALINE_REQTYPE, GameAppOperation.QQFAV_DATALINE_TYPE_IMAGE_TEXT);
                 params.putString(GameAppOperation.QQFAV_DATALINE_TITLE, title);
                 params.putString(GameAppOperation.QQFAV_DATALINE_DESCRIPTION, description);
                 params.putString(GameAppOperation.QQFAV_DATALINE_IMAGEURL,image);
                 params.putString(GameAppOperation.QQFAV_DATALINE_APPNAME, appName);
+                params.putStringArrayList(GameAppOperation.QQFAV_DATALINE_FILEDATA,imageUrls);
                 Runnable favoritesRunnable = new Runnable() {
                     @Override
                     public void run() {
@@ -275,17 +281,16 @@ public class QQSDK extends ReactContextBaseJavaModule {
                 UiThreadUtil.runOnUiThread(favoritesRunnable);
                 break;
             case ShareScene.QQZone:
-                ArrayList<String> imageUrls = new ArrayList<String>();
-                imageUrls.add(image);
-                params.putInt(QzoneShare.SHARE_TO_QZONE_KEY_TYPE, QzoneShare.SHARE_TO_QZONE_TYPE_IMAGE);
-                params.putString(QzoneShare.SHARE_TO_QQ_TITLE, title);
-                params.putString(QzoneShare.SHARE_TO_QQ_SUMMARY,description);
-                params.putStringArrayList(QzoneShare.SHARE_TO_QQ_IMAGE_URL, imageUrls);
+                params.putInt(QQShare.SHARE_TO_QQ_KEY_TYPE, QQShare.SHARE_TO_QQ_TYPE_IMAGE);
+                params.putString(QQShare.SHARE_TO_QQ_IMAGE_LOCAL_URL,image);
+                params.putString(QQShare.SHARE_TO_QQ_TITLE, title);
+                params.putString(QQShare.SHARE_TO_QQ_SUMMARY, description);
+                params.putInt(QQShare.SHARE_TO_QQ_EXT_INT,QQShare.SHARE_TO_QQ_FLAG_QZONE_AUTO_OPEN);
                 Runnable zoneRunnable = new Runnable() {
 
                     @Override
                     public void run() {
-                        mTencent.shareToQzone(currentActivity,params,qZoneShareListener);
+                        mTencent.shareToQQ(currentActivity,params,qqShareListener);
                     }
                 };
                 UiThreadUtil.runOnUiThread(zoneRunnable);
@@ -306,6 +311,11 @@ public class QQSDK extends ReactContextBaseJavaModule {
         mPromise = promise;
         if(imageType == ImageType.Base64) {
             image = saveBitmapToFile(decodeBase64ToBitmap(image));
+        } else if (imageType == ImageType.Local){
+            File file = new File(image);
+            if(!file.exists()) {
+                image = dealLocalTypeFile(image);
+            }
         }
         final Bundle params = new Bundle();
         switch (shareScene) {
@@ -377,6 +387,11 @@ public class QQSDK extends ReactContextBaseJavaModule {
         mPromise = promise;
         if(imageType == ImageType.Base64) {
             image = saveBitmapToFile(decodeBase64ToBitmap(image));
+        }else if (imageType == ImageType.Local){
+            File file = new File(image);
+            if(!file.exists()) {
+                image = dealLocalTypeFile(image);
+            }
         }
         final Bundle params = new Bundle();
         switch (shareScene) {
@@ -550,12 +565,23 @@ public class QQSDK extends ReactContextBaseJavaModule {
         }
     }
 
+    /**
+     * 将Base64解码成Bitmap
+     * @param Base64String
+     * @return
+     */
+
     private Bitmap decodeBase64ToBitmap(String Base64String) {
         byte[] decode = Base64.decode(Base64String,Base64.DEFAULT);
         Bitmap bitmap = BitmapFactory.decodeByteArray(decode, 0, decode.length);
         return  bitmap;
     }
 
+    /**
+     * 将bitmap 保存成文件
+     * @param bitmap
+     * @return
+     */
     private String saveBitmapToFile(Bitmap bitmap) {
         File pictureFile = getOutputMediaFile();
         if (pictureFile == null) {
@@ -572,6 +598,11 @@ public class QQSDK extends ReactContextBaseJavaModule {
         }
         return pictureFile.getAbsolutePath();
     }
+
+    /**
+     * 生成文件用来存储图片
+     * @return
+     */
     private File getOutputMediaFile(){
         File mediaStorageDir = new File(Environment.getExternalStorageDirectory()
                 + "/Android/data/"
@@ -616,12 +647,12 @@ public class QQSDK extends ReactContextBaseJavaModule {
         @Override
         public void onComplete(Object response) {
             if (null == response) {
-                mPromise.reject("403",QQ_RESPONSE_ERROR);
+                mPromise.reject("600",QQ_RESPONSE_ERROR);
                 return;
             }
             JSONObject jsonResponse = (JSONObject) response;
             if (null != jsonResponse && jsonResponse.length() == 0) {
-                mPromise.reject("403",QQ_RESPONSE_ERROR);
+                mPromise.reject("600",QQ_RESPONSE_ERROR);
                 return;
             }
             initOpenidAndToken(jsonResponse);
@@ -635,12 +666,12 @@ public class QQSDK extends ReactContextBaseJavaModule {
 
         @Override
         public void onError(UiError e) {
-            mPromise.reject("500",e.errorMessage);
+            mPromise.reject("600",e.errorMessage);
         }
 
         @Override
         public void onCancel() {
-            mPromise.reject("500",QQ_CANCEL_BY_USER);
+            mPromise.reject("603",QQ_CANCEL_BY_USER);
         }
     };
 
@@ -650,7 +681,7 @@ public class QQSDK extends ReactContextBaseJavaModule {
     IUiListener qqShareListener = new IUiListener() {
         @Override
         public void onCancel() {
-            mPromise.reject("500",QQ_CANCEL_BY_USER);
+            mPromise.reject("503",QQ_CANCEL_BY_USER);
         }
 
         @Override
@@ -671,7 +702,7 @@ public class QQSDK extends ReactContextBaseJavaModule {
 
         @Override
         public void onCancel() {
-            mPromise.reject("500",QZONE_SHARE_CANCEL);
+            mPromise.reject("503",QZONE_SHARE_CANCEL);
         }
 
         @Override
@@ -691,7 +722,7 @@ public class QQSDK extends ReactContextBaseJavaModule {
     IUiListener addToQQFavoritesListener = new IUiListener() {
         @Override
         public void onCancel() {
-            mPromise.reject("500",QQFAVORITES_CANCEL);
+            mPromise.reject("503",QQFAVORITES_CANCEL);
         }
 
         @Override

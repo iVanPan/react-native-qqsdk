@@ -63,7 +63,7 @@ RCT_EXPORT_METHOD(checkClientInstalled
     if ([TencentOAuth iphoneQQInstalled] && [TencentOAuth iphoneQQSupportSSOLogin]) {
         resolve(@YES);
     } else {
-        reject(QQ_NOT_INSTALLED, QQ_NOT_INSTALLED, nil);
+        reject(@"404", QQ_NOT_INSTALLED, nil);
     }
 }
 
@@ -109,7 +109,7 @@ RCT_EXPORT_METHOD(logout
     logoutReject = reject;
     [tencentOAuth logout: self];
 }
-//必填，最长1536个字符
+
 RCT_EXPORT_METHOD(shareText:(NSString *)text
                   shareScene:(QQShareScene)scene
                   :(RCTPromiseResolveBlock)resolve
@@ -211,7 +211,6 @@ RCT_EXPORT_METHOD(shareAudio:(NSString *)previewUrl
     switch (type) {
         case Local: {
             NSData* imageData = [NSData dataWithContentsOfFile:image];
-            NSLog(@"image dat is %@",imageData);
             [self shareObjectWithData:@{@"url":previewUrl,
                                         @"flashUrl":flashUrl,
                                         @"image":imageData,
@@ -260,7 +259,6 @@ RCT_EXPORT_METHOD(shareVideo:(NSString *)previewUrl
     switch (type) {
         case Local: {
             NSData* imageData = [NSData dataWithContentsOfFile:image];
-            NSLog(@"image dat is %@",imageData);
             [self shareObjectWithData:@{@"url":previewUrl,
                                         @"flashUrl":flashUrl,
                                         @"image":imageData,
@@ -463,9 +461,8 @@ RCT_EXPORT_METHOD(shareVideo:(NSString *)previewUrl
         case EQQAPIAPPSHAREASYNC:
             break;
         case EQQAPIAPPNOTREGISTED: {
-            NSLog(@"App未注册");
             if(shareReject) {
-                shareReject(@"100",@"App未注册",nil);
+                shareReject(@"500",@"App未注册",nil);
                 shareReject = nil;
                 shareResolve = nil;
             }
@@ -474,72 +471,64 @@ RCT_EXPORT_METHOD(shareVideo:(NSString *)previewUrl
         case EQQAPIMESSAGECONTENTINVALID:
         case EQQAPIMESSAGECONTENTNULL:
         case EQQAPIMESSAGETYPEINVALID: {
-            NSLog(@"发送参数错误");
             if(shareReject) {
-                shareReject(@"100",@"发送参数错误",nil);
+                shareReject(@"500",@"发送参数错误",nil);
                 shareReject = nil;
                 shareResolve = nil;
             }
             break;
         }
         case EQQAPIQQNOTINSTALLED: {
-            NSLog(@"没有安装手机QQ");
             if(shareReject) {
-                shareReject(@"100",@"没有安装手机QQ",nil);
+                shareReject(@"500",@"没有安装手机QQ",nil);
                 shareReject = nil;
                 shareResolve = nil;
             }
             break;
         }
         case EQQAPIQQNOTSUPPORTAPI: {
-            NSLog(@"API接口不支持");
             if(shareReject) {
-                shareReject(@"100",@"API接口不支持",nil);
+                shareReject(@"500",@"API接口不支持",nil);
                 shareReject = nil;
                 shareResolve = nil;
             }
             break;
         }
         case EQQAPISENDFAILD: {
-            NSLog(@"发送失败");
             if(shareReject) {
-                shareReject(@"100",@"发送失败",nil);
+                shareReject(@"500",@"发送失败",nil);
                 shareReject = nil;
                 shareResolve = nil;
             }
             break;
         }
         case EQQAPIVERSIONNEEDUPDATE: {
-            NSLog(@"当前QQ版本太低");
             if(shareReject) {
-                shareReject(@"100",@"当前QQ版本太低",nil);
+                shareReject(@"500",@"当前QQ版本太低",nil);
                 shareReject = nil;
                 shareResolve = nil;
             }
             break;
         }
         case EQQAPIQZONENOTSUPPORTTEXT:{
-            NSLog(@"QQZone不支持QQApiTextObject分享");
             if(shareReject) {
-                shareReject(@"100",@"QQZone不支持QQApiTextObject分享",nil);
+                shareReject(@"500",@"QQZone不支持QQApiTextObject分享",nil);
                 shareReject = nil;
                 shareResolve = nil;
             }
             break;
         }
         case EQQAPIQZONENOTSUPPORTIMAGE:{
-            NSLog(@"QQZone不支持QQApiImageObject分享");
             if(shareReject) {
-                shareReject(@"100",@"QQZone不支持QQApiImageObject分享",nil);
+                shareReject(@"500",@"QQZone不支持QQApiImageObject分享",nil);
                 shareReject = nil;
                 shareResolve = nil;
             }
             break;
         }
         default: {
-            NSLog(@"发生其他错误 is %ld",sendResult);
             if(shareReject) {
-                shareReject(@"100",@"发生其他错误",nil);
+                shareReject(@"500",@"发生其他错误",nil);
                 shareReject = nil;
                 shareResolve = nil;
             }
@@ -557,7 +546,6 @@ RCT_EXPORT_METHOD(shareVideo:(NSString *)previewUrl
 }
 - (void)handleOpenURLNotification:(NSNotification *)notification {
     NSURL *url = [NSURL URLWithString: [notification userInfo][@"url"]];
-    NSLog(@"openUrl is %@",url);
     NSString *schemaPrefix = [@"tencent" stringByAppendingString:appId];
     if ([url isKindOfClass:[NSURL class]] && [[url absoluteString] hasPrefix:[schemaPrefix stringByAppendingString:@"://response_from_qq"]]) {
         [QQApiInterface handleOpenURL:url delegate:self];
@@ -597,14 +585,14 @@ RCT_EXPORT_METHOD(shareVideo:(NSString *)previewUrl
         }
         case -4: {
             if(shareReject) {
-                shareReject(QQ_SHARE_CANCEL,QQ_SHARE_CANCEL,nil);
+                shareReject(@"503",QQ_SHARE_CANCEL,nil);
                 shareResolve = nil;
             }
             break;
         }
         default:{
             if(shareReject) {
-                shareReject(QQ_OTHER_ERROR,QQ_OTHER_ERROR,nil);
+                shareReject(@"500",QQ_OTHER_ERROR,nil);
                 shareReject = nil;
                 shareResolve = nil;
             }
@@ -626,7 +614,7 @@ RCT_EXPORT_METHOD(shareVideo:(NSString *)previewUrl
         loginReject = nil;
     } else {
         if(loginReject) {
-            loginReject(QQ_LOGIN_ERROR,QQ_LOGIN_ERROR,nil);
+            loginReject(@"600",QQ_LOGIN_ERROR,nil);
             loginResolve = nil;
             logoutReject = nil;
         }
@@ -642,7 +630,7 @@ RCT_EXPORT_METHOD(shareVideo:(NSString *)previewUrl
 
 - (void)tencentDidNotLogin:(BOOL)cancelled {
     if (cancelled && loginReject) {
-        loginReject(QQ_LOGIN_CANCEL,QQ_LOGIN_CANCEL,nil);
+        loginReject(@"603",QQ_LOGIN_CANCEL,nil);
         loginResolve = nil;
         loginReject = nil;
     }
@@ -650,7 +638,7 @@ RCT_EXPORT_METHOD(shareVideo:(NSString *)previewUrl
 
 - (void)tencentDidNotNetWork {
     if (loginReject) {
-        loginReject(QQ_LOGIN_NETWORK_ERROR,QQ_LOGIN_NETWORK_ERROR,nil);
+        loginReject(@"600",QQ_LOGIN_NETWORK_ERROR,nil);
         loginResolve = nil;
         loginReject = nil;
     }
