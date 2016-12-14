@@ -23,6 +23,7 @@ A React Native wrapper around the Tencent QQ SDK for Android and iOS. Provides a
 	- [shareImage](#shareimage)
 	- [shareNews](#sharenews)
 	- [shareAudio](#shareaudio)
+	- [getUserInfo](#getuserinfo)
 
 
 
@@ -220,8 +221,11 @@ QQ.shareAudio(audioPreviewUrl,audioUrl,imgUrl,QQ.imageType.Network,'十年','陈
 .catch((error)=>{console.log('error is', error)});
 
   ```
-
-
+#####getUserInfo
+```js
+var url = "https://graph.qq.com/user/get_user_info?access_token=" + accessToken + "&oauth_consumer_key= APPID &openid=" + userId;
+http.get(url)
+```
 
 
 
