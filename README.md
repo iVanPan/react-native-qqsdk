@@ -24,8 +24,10 @@ A React Native wrapper around the Tencent QQ SDK for Android and iOS. Provides a
 	- [shareNews](#sharenews)
 	- [shareAudio](#shareaudio)
 	- [getUserInfo](#getuserinfo)
+- [Contributing](#contributing) 
+- [License](#license) 
 
-
+	
 
 ## Feature
 1. QQ SSO Login
@@ -226,7 +228,10 @@ QQ.shareAudio(audioPreviewUrl,audioUrl,imgUrl,QQ.imageType.Network,'十年','陈
 var url = "https://graph.qq.com/user/get_user_info?access_token=" + accessToken + "&oauth_consumer_key= APPID &openid=" + userId;
 http.get(url)
 ```
+## Contributing
+Feel free to contribute
 
+## License
 
-
+**react-native-qqsdk** is released under the **MIT** license. See [LICENSE](https://github.com/iVanPan/react-native-qqsdk/blob/master/LICENSE) file for more information.
 
