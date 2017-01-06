@@ -31,6 +31,8 @@ import com.tencent.tauth.IUiListener;
 import com.tencent.tauth.Tencent;
 import com.tencent.tauth.UiError;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import org.json.JSONObject;
 
 import java.io.File;
@@ -55,11 +57,7 @@ class ShareScene {
     public static final int QQZone = 1;
     public static final int Favorite = 2;
 }
-class ImageType {
-    public static final int Local = 0;
-    public static final int Base64 = 1;
-    public static final int Network = 2;
-}
+
 public class QQSDK extends ReactContextBaseJavaModule {
 
     private static Tencent mTencent;
@@ -236,17 +234,7 @@ public class QQSDK extends ReactContextBaseJavaModule {
             return;
         }
         mPromise = promise;
-        if (imageType == ImageType.Network) {
-            image = saveBitmapToFile(getBitmapFromURL(image));
-        } else if (imageType == ImageType.Local){
-            File file = new File(image);
-            if(!file.exists()) {
-                image = dealLocalTypeFile(image);
-                Log.d("转化后图片地址",image);
-            }
-        } else if(imageType == ImageType.Base64) {
-            image = saveBitmapToFile(decodeBase64ToBitmap(image));
-        }
+        image = processImage(image);
         final Bundle params = new Bundle();
         switch (shareScene) {
             case ShareScene.QQ:
@@ -309,22 +297,14 @@ public class QQSDK extends ReactContextBaseJavaModule {
             return;
         }
         mPromise = promise;
-        if(imageType == ImageType.Base64) {
-            image = saveBitmapToFile(decodeBase64ToBitmap(image));
-        } else if (imageType == ImageType.Local){
-            File file = new File(image);
-            if(!file.exists()) {
-                image = dealLocalTypeFile(image);
-            }
-        }
         final Bundle params = new Bundle();
         switch (shareScene) {
             case ShareScene.QQ:
                 params.putInt(QQShare.SHARE_TO_QQ_KEY_TYPE, QQShare.SHARE_TO_QQ_TYPE_DEFAULT);
-                if(imageType == ImageType.Network) {
+                if(image.startsWith("http://")||image.startsWith("https://")) {
                     params.putString(QQShare.SHARE_TO_QQ_IMAGE_URL,image);
-                } else  {
-                    params.putString(QQShare.SHARE_TO_QQ_IMAGE_LOCAL_URL,image);
+                } else {
+                    params.putString(QQShare.SHARE_TO_QQ_IMAGE_LOCAL_URL,processImage(image));
                 }
                 params.putString(QQShare.SHARE_TO_QQ_TITLE, title);
                 params.putString(QQShare.SHARE_TO_QQ_TARGET_URL, url);
@@ -385,22 +365,14 @@ public class QQSDK extends ReactContextBaseJavaModule {
             return;
         }
         mPromise = promise;
-        if(imageType == ImageType.Base64) {
-            image = saveBitmapToFile(decodeBase64ToBitmap(image));
-        }else if (imageType == ImageType.Local){
-            File file = new File(image);
-            if(!file.exists()) {
-                image = dealLocalTypeFile(image);
-            }
-        }
         final Bundle params = new Bundle();
         switch (shareScene) {
             case ShareScene.QQ:
                 params.putInt(QQShare.SHARE_TO_QQ_KEY_TYPE, QQShare.SHARE_TO_QQ_TYPE_DEFAULT);
-                if(imageType == ImageType.Network) {
+                if(image.startsWith("http://")||image.startsWith("https://")) {
                     params.putString(QQShare.SHARE_TO_QQ_IMAGE_URL,image);
-                } else  {
-                    params.putString(QQShare.SHARE_TO_QQ_IMAGE_LOCAL_URL,image);
+                } else {
+                    params.putString(QQShare.SHARE_TO_QQ_IMAGE_LOCAL_URL,processImage(image));
                 }
                 params.putString(QQShare.SHARE_TO_QQ_AUDIO_URL, flashUrl);
                 params.putString(QQShare.SHARE_TO_QQ_TITLE, title);
@@ -495,9 +467,6 @@ public class QQSDK extends ReactContextBaseJavaModule {
     @Override
     public Map<String, Object> getConstants() {
         final Map<String, Object> constants = new HashMap<>();
-        constants.put("Local", ImageType.Local);
-        constants.put("Base64", ImageType.Base64);
-        constants.put("Network", ImageType.Network);
         constants.put("QQ", ShareScene.QQ);
         constants.put("QQZone", ShareScene.QQZone);
         constants.put("Favorite", ShareScene.Favorite);
@@ -536,9 +505,32 @@ public class QQSDK extends ReactContextBaseJavaModule {
         final String AppName = (String)((applicationInfo != null) ? packageManager.getApplicationLabel(applicationInfo) : "AppName");
         return AppName;
     }
+    private String processImage(String image) {
+        if(image.startsWith("http://") || image.startsWith("https://")) {
+            return saveBitmapToFile(getBitmapFromURL(image));
+        } else if (isBase64(image)) {
+            return saveBitmapToFile(decodeBase64ToBitmap(image));
+        } else if (image.startsWith("file://") || image.startsWith("/") ){
+            File file = new File(image);
+            return file.getAbsolutePath();
+        } else {
+            return saveBitmapToFile(BitmapFactory.decodeResource(getReactApplicationContext().getResources(),getDrawableFileID(image)));
+        }
+    }
 
-    /** 获取Drawble资源的文件ID
-     *
+  /**
+   * 检查图片字符串是不是Base64
+   * @param image
+   * @return
+   */
+    private boolean isBase64(String image) {
+        Pattern sPattern = Pattern.compile("^([A-Za-z0-9+/]{4})*([A-Za-z0-9+/]{4}|[A-Za-z0-9+/]{3}=|[A-Za-z0-9+/]{2}==)$");
+        Matcher matcher = sPattern.matcher(image);
+        return  matcher.matches();
+    }
+
+    /**
+     * 获取Drawble资源的文件ID
      * @param imageName
      * @return
      */
@@ -547,11 +539,13 @@ public class QQSDK extends ReactContextBaseJavaModule {
         int id = sResourceDrawableIdHelper.getResourceDrawableId(getReactApplicationContext(),imageName);
         return id;
     }
-    private String dealLocalTypeFile(String image) {
-        Bitmap bitmap = BitmapFactory.decodeResource(getReactApplicationContext().getResources(),getDrawableFileID(image));
-        return  saveBitmapToFile(bitmap);
-    }
-    public static Bitmap getBitmapFromURL(String src) {
+
+  /**
+   * 根据图片的URL转化层Bitmap
+   * @param src
+   * @return
+   */
+    private static Bitmap getBitmapFromURL(String src) {
         try {
             URL url = new URL(src);
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
