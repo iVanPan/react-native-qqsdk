@@ -234,9 +234,7 @@ public class QQSDK extends ReactContextBaseJavaModule {
             return;
         }
         mPromise = promise;
-        Log.d("图片地址",image);
         image = processImage(image);
-        Log.d("处理后的图片地址",image);
         final Bundle params = new Bundle();
         switch (shareScene) {
             case ShareScene.QQ:
@@ -530,9 +528,16 @@ public class QQSDK extends ReactContextBaseJavaModule {
    * @return
    */
     private boolean isBase64(String image) {
-        Pattern sPattern = Pattern.compile("^([A-Za-z0-9+/]{4})*([A-Za-z0-9+/]{4}|[A-Za-z0-9+/]{3}=|[A-Za-z0-9+/]{2}==)$");
-        Matcher matcher = sPattern.matcher(image);
-        return  matcher.matches();
+        try {
+            byte[] decodedString = Base64.decode(image, Base64.DEFAULT);
+            Bitmap bitmap = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
+            if (bitmap == null) {
+                return false;
+            }
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
     }
 
     /**
