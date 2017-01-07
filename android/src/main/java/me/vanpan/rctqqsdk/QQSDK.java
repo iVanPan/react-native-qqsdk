@@ -129,7 +129,7 @@ public class QQSDK extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod
-    public void checkClientInstalled(final Promise promise) {
+    public void checkClientInstalled(Promise promise) {
         Activity currentActivity = getCurrentActivity();
         if (null == currentActivity) {
             promise.reject("405",ACTIVITY_DOES_NOT_EXIST);
@@ -226,7 +226,7 @@ public class QQSDK extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod
-    public void shareImage(String image,int imageType,String title, String description,int shareScene, final Promise promise) {
+    public void shareImage(String image,String title, String description,int shareScene, final Promise promise) {
         final Activity currentActivity = getCurrentActivity();
         Log.d("图片地址",image);
         if (null == currentActivity) {
@@ -234,7 +234,9 @@ public class QQSDK extends ReactContextBaseJavaModule {
             return;
         }
         mPromise = promise;
+        Log.d("图片地址",image);
         image = processImage(image);
+        Log.d("处理后的图片地址",image);
         final Bundle params = new Bundle();
         switch (shareScene) {
             case ShareScene.QQ:
@@ -290,7 +292,7 @@ public class QQSDK extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod
-    public void shareNews(String url,String image,int imageType,String title, String description,int shareScene, final Promise promise) {
+    public void shareNews(String url,String image,String title, String description,int shareScene, final Promise promise) {
         final Activity currentActivity = getCurrentActivity();
         if (null == currentActivity) {
             promise.reject("405",ACTIVITY_DOES_NOT_EXIST);
@@ -319,6 +321,7 @@ public class QQSDK extends ReactContextBaseJavaModule {
                 UiThreadUtil.runOnUiThread(qqRunnable);
                 break;
             case ShareScene.Favorite:
+                image = processImage(image);
                 params.putInt(GameAppOperation.QQFAV_DATALINE_REQTYPE, GameAppOperation.QQFAV_DATALINE_TYPE_DEFAULT);
                 params.putString(GameAppOperation.QQFAV_DATALINE_TITLE, title);
                 params.putString(GameAppOperation.QQFAV_DATALINE_DESCRIPTION,description);
@@ -334,6 +337,7 @@ public class QQSDK extends ReactContextBaseJavaModule {
                 UiThreadUtil.runOnUiThread(favoritesRunnable);
                 break;
             case ShareScene.QQZone:
+                image = processImage(image);
                 ArrayList<String> imageUrls = new ArrayList<String>();
                 imageUrls.add(image);
                 params.putInt(QzoneShare.SHARE_TO_QZONE_KEY_TYPE, QzoneShare.SHARE_TO_QZONE_TYPE_IMAGE_TEXT);
@@ -358,7 +362,7 @@ public class QQSDK extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod
-    public void shareAudio(String url,String flashUrl,String image,int imageType,String title, String description,int shareScene, final Promise promise) {
+    public void shareAudio(String url,String flashUrl,String image,String title, String description,int shareScene, final Promise promise) {
         final Activity currentActivity = getCurrentActivity();
         if (null == currentActivity) {
             promise.reject("405",ACTIVITY_DOES_NOT_EXIST);
@@ -388,6 +392,7 @@ public class QQSDK extends ReactContextBaseJavaModule {
                 UiThreadUtil.runOnUiThread(qqRunnable);
                 break;
             case ShareScene.Favorite:
+                image = processImage(image);
                 params.putInt(GameAppOperation.QQFAV_DATALINE_REQTYPE, GameAppOperation.QQFAV_DATALINE_TYPE_DEFAULT);
                 params.putString(GameAppOperation.QQFAV_DATALINE_TITLE, title);
                 params.putString(GameAppOperation.QQFAV_DATALINE_DESCRIPTION,description);
@@ -404,6 +409,7 @@ public class QQSDK extends ReactContextBaseJavaModule {
                 UiThreadUtil.runOnUiThread(favoritesRunnable);
                 break;
             case ShareScene.QQZone:
+                image = processImage(image);
                 ArrayList<String> imageUrls = new ArrayList<String>();
                 imageUrls.add(image);
                 params.putInt(QzoneShare.SHARE_TO_QZONE_KEY_TYPE, QzoneShare.SHARE_TO_QZONE_TYPE_IMAGE_TEXT);
@@ -427,7 +433,7 @@ public class QQSDK extends ReactContextBaseJavaModule {
         }
     }
     @ReactMethod
-    public void shareVideo(String url,String flashUrl,String image,int imageType,String title, String description,int shareScene, final Promise promise) {
+    public void shareVideo(String url,String flashUrl,String image,String title, String description,int shareScene, final Promise promise) {
         final Activity currentActivity = getCurrentActivity();
         if (null == currentActivity) {
             promise.reject("405",ACTIVITY_DOES_NOT_EXIST);
