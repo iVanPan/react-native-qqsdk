@@ -2,7 +2,7 @@
 [![version](https://img.shields.io/badge/version-0.6.1-blue.svg?style=flat)](https://github.com/iVanPan/react-native-qqsdk)
 [![platform](https://img.shields.io/badge/platform-iOS%2FAndroid-lightgrey.svg?style=flat)](https://github.com/iVanPan/react-native-qqsdk)
 [![GitHub license](https://img.shields.io/github/license/mashape/apistatus.svg?style=flat)](https://github.com/iVanPan/react-native-qqsdk/blob/master/LICENSE)
-[![Contact](https://img.shields.io/badge/contact-Van-green.svg?style=flat)](http://VanPan.me)	
+[![Contact](https://img.shields.io/badge/contact-Van-green.svg?style=flat)](http://VanPan.me) 
 A React Native wrapper around the Tencent QQ SDK for Android and iOS. Provides access to QQ ssoLogin, QQ Sharing, QQ Zone Sharing etc.
 ## Table of Contents
 
@@ -10,24 +10,26 @@ A React Native wrapper around the Tencent QQ SDK for Android and iOS. Provides a
 - [Installation](#installation)
   - [RNPM](#rnpm)
   - [Manual](#manual)
-  	- [iOS Setup](#ios-setup)
-  	- [Android Setup](#android-setup)
-- [Documentation](#documentation) 		
+    - [iOS Setup](#ios-setup)
+    - [Android Setup](#android-setup)
+- [Documentation](#documentation)     
   - [Support API](#support-api)
   - [Error Code](#error-code)
+  - [Image](#image)
   - [Usage](#usage)
-  	- [checkClientInstalled](#checkclientinstalled)
-	- [ssoLogin](#ssologin)
-	- [logout](#logout)
-	- [shareText](#sharetext)
-	- [shareImage](#shareimage)
-	- [shareNews](#sharenews)
-	- [shareAudio](#shareaudio)
-	- [getUserInfo](#getuserinfo)
+    - [checkClientInstalled](#checkclientinstalled)
+  - [ssoLogin](#ssologin)
+  - [logout](#logout)
+  - [shareText](#sharetext)
+  - [shareImage](#shareimage)
+  - [shareNews](#sharenews)
+  - [shareAudio](#shareaudio)
+  - [getUserInfo](#getuserinfo)
+- [About SDK](#about-sdk) 
 - [Contributing](#contributing) 
 - [License](#license) 
 
-	
+  
 
 ## Feature
 1. QQ SSO Login
@@ -35,7 +37,7 @@ A React Native wrapper around the Tencent QQ SDK for Android and iOS. Provides a
 3. QQ Share 
 4. QZone Share
 5. QQ Favorites
-6. checkClientInstalled		
+6. checkClientInstalled   
 
 ##Installation
 ```shell
@@ -69,7 +71,7 @@ Add a new value, `$(SRCROOT)/../node_modules/react-native-qqsdk/ios/RCTQQSDK` an
 8. Under the "Info" tab of your project configuration, find the "URL Types" section and add your app Id.
 
 9. Under the "Info" tab of your project configuration, add LSApplicationQueriesSchemes For QQ SDK.
-	![Add LSApplicationQueriesSchemes](https://github.com/iVanPan/react-native-qqsdk/blob/master/asset/%E5%B1%8F%E5%B9%95%E5%BF%AB%E7%85%A7%202016-12-13%2013.47.15.png)
+  ![Add LSApplicationQueriesSchemes](https://github.com/iVanPan/react-native-qqsdk/blob/master/asset/%E5%B1%8F%E5%B9%95%E5%BF%AB%E7%85%A7%202016-12-13%2013.47.15.png)
 10. add following code to your AppDelegate.m 
 ```objectiv-c
 ...
@@ -105,7 +107,7 @@ Add a new value, `$(SRCROOT)/../node_modules/react-native-qqsdk/ios/RCTQQSDK` an
 
     ```gradle
     ...
-	manifestPlaceholders = [
+  manifestPlaceholders = [
            QQ_APP_ID: ${QQ_APP_ID}, //在此替换你的APPKey
     ]
     ```
@@ -142,9 +144,9 @@ public class MainApplication extends Application implements ReactApplication {
 |      Platform      |   iOS  |   iOS     |     iOS      | Android |  Android  |    Android   |
 |        :---:       | :---:  |   :---:   |    :---:     |   :---: |    :---:  |     :---:    |
 |      ShareScene    |   QQ   |   QQZone  |  QQ Favorite |    QQ   |   QQZone  |  QQ Favorite |
-|      Text 	     |    √   |     √     |      √       |    ✕    |     √     |      √       |
+|      Text        |    √   |     √     |      √       |    ✕    |     √     |      √       |
 |      Image         |    √   |     √     |      √       |    √    |     √     |      √       |
-|      News 	     |    √   |     √     |      √       |    √    |     √     |      √       |
+|      News        |    √   |     √     |      √       |    √    |     √     |      √       |
 |      Audio         |    √   |     √     |      √       |    √    |     √     |      √       |
 
 
@@ -160,7 +162,12 @@ public class MainApplication extends Application implements ReactApplication {
 |      600    |                        QQ ssoLogin error                             |
 |      603    |                        ssoLogin cancelled                            |
 
-
+###Image
+ This plugin support three Image types:
+  1. Network URL
+  2. Base64
+  3. Absolute file path
+ also support resolveAssetSource,for example, resolveAssetSource(require('./news.jpg')).uri
 ###Usage
 #####checkClientInstalled
   ```js
@@ -228,6 +235,8 @@ QQ.shareAudio(audioPreviewUrl,audioUrl,imgUrl,'十年','陈奕迅',QQ.shareScene
 var url = "https://graph.qq.com/user/get_user_info?access_token=" + accessToken + "&oauth_consumer_key= APPID &openid=" + userId;
 http.get(url)
 ```
+## About SDK 
+This plugin use 3.1.1 version sdk for Android,3.1.3 version sdk for iOS. You can download lastest version sdk [here](http://wiki.connect.qq.com/sdk%E4%B8%8B%E8%BD%BD)
 ## Contributing
 Feel free to contribute
 
