@@ -198,7 +198,7 @@ QQ.shareText("分享文字",QQ.shareScene.QQ)
   ```js
 import * as QQ from "react-native-qqsdk";
 const imgUrl = "https://y.gtimg.cn/music/photo_new/T001R300x300M000003Nz2So3XXYek.jpg";
-QQ.shareImage(imgUrl,QQ.imageType.Network,'分享标题','分享描述',QQ.shareScene.QQ)
+QQ.shareImage(imgUrl,'分享标题','分享描述',QQ.shareScene.QQ)
   .then((result)=>{console.log('result is', result)})
   .catch((error)=>{console.log('error is', error)});
 
@@ -207,7 +207,7 @@ QQ.shareImage(imgUrl,QQ.imageType.Network,'分享标题','分享描述',QQ.share
   ```js
 import * as QQ from "react-native-qqsdk";
 import resolveAssetSource from 'resolveAssetSource';
-QQ.shareNews('https://facebook.github.io/react-native/',resolveAssetSource(require('./news.jpg')).uri,QQ.imageType.Local,'分享新闻标题','分享新闻描述',QQ.shareScene.QQ)
+QQ.shareNews('https://facebook.github.io/react-native/',resolveAssetSource(require('./news.jpg')).uri,'分享新闻标题','分享新闻描述',QQ.shareScene.QQ)
 .then((result)=>{console.log('result is', result)})
 .catch((error)=>{console.log('error is', error)});
 
@@ -218,7 +218,7 @@ import * as QQ from "react-native-qqsdk";
 const audioPreviewUrl = "https://y.qq.com/portal/song/001OyHbk2MSIi4.html";
 const audioUrl = "http://stream20.qqmusic.qq.com/30577158.mp3";
 const imgUrl = "https://y.gtimg.cn/music/photo_new/T001R300x300M000003Nz2So3XXYek.jpg";
-QQ.shareAudio(audioPreviewUrl,audioUrl,imgUrl,QQ.imageType.Network,'十年','陈奕迅',QQ.shareScene.QQ)
+QQ.shareAudio(audioPreviewUrl,audioUrl,imgUrl,'十年','陈奕迅',QQ.shareScene.QQ)
 .then((result)=>{console.log('result is', result)})
 .catch((error)=>{console.log('error is', error)});
 
