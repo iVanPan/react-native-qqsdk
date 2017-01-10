@@ -37,7 +37,7 @@ addQueriesSchemes();
 
 
 function addRCTLinkManagerHeader() {
-  var linkHeaderImportStatement = `#import "RCTLinkingManager.h"`;
+  var linkHeaderImportStatement = `#import <React/RCTLinkingManager.h>`;
   if (~appDelegateContents.indexOf(linkHeaderImportStatement)) {
       console.log(`"RCTLinkingManager.h" header already imported.`);
   } else {
@@ -159,7 +159,7 @@ function addFrameworkAndSearchPath() {
       if (error) {
         console.log('xcode project error is', error);
       } else {
-        var target = project.getFirstTarget().uuid;
+        var target = project.getFirstTarget().uuid;        
         var file = new pbxFile(project_relative,{customFramework: true, target:target});
         file.uuid = project.generateUuid();
         file.fileRef = project.generateUuid();
@@ -169,13 +169,14 @@ function addFrameworkAndSearchPath() {
          project.addToPbxFileReferenceSection(file);    // PBXFileReference
          project.addToFrameworksPbxGroup(file);         // PBXGroup
          project.addToPbxFrameworksBuildPhase(file);    // PBXFrameworksBuildPhase
-        addSearchPaths(project,'"$(SRCROOT)/../node_modules/react-native/Libraries/**"','"$(SRCROOT)/../node_modules/react-native-qqsdk/ios/RCTQQSDK/**"');
+         //project.addToFrameworkSearchPaths(file);
+        addSearchPaths(project,'"$(SRCROOT)/../node_modules/react-native-qqsdk/ios/RCTQQSDK/**"');
         fs.writeFileSync(projectPath, project.writeSync());
       }
     });
 }
 
-function addSearchPaths(project, headerSearchPath, frameworkSearchPath) {
+function addSearchPaths(project, frameworkSearchPath) {
   const config = project.pbxXCBuildConfigurationSection();
   const INHERITED = '"$(inherited)"';
   Object
@@ -184,14 +185,8 @@ function addSearchPaths(project, headerSearchPath, frameworkSearchPath) {
     .forEach(ref => {
       const buildSettings = config[ref].buildSettings;
       const shouldVisitBuildSettings = (
-      Array.isArray(buildSettings.HEADER_SEARCH_PATHS) ?
-        buildSettings.HEADER_SEARCH_PATHS :
-        []).filter(path => path.indexOf('react-native/React/**') >= 0).length > 0;
+        buildSettings['PRODUCT_NAME'] === package.name);
     if (shouldVisitBuildSettings) {
-     var headerIndex = _.findIndex(buildSettings['HEADER_SEARCH_PATHS'], function(path) { return path == headerSearchPath; });
-     if (headerIndex === -1) {
-       buildSettings['HEADER_SEARCH_PATHS'].push(headerSearchPath);
-     }
       if (!buildSettings['FRAMEWORK_SEARCH_PATHS']
         || buildSettings['FRAMEWORK_SEARCH_PATHS'] === INHERITED) {
         buildSettings['FRAMEWORK_SEARCH_PATHS'] = [INHERITED];

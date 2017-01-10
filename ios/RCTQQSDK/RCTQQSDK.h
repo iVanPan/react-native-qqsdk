@@ -7,11 +7,11 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "RCTBridgeModule.h"
+#import <React/RCTBridgeModule.h>
 #import <TencentOpenAPI/QQApiInterface.h>
 #import <TencentOpenAPI/TencentOAuth.h>
-#import "RCTBridge.h"
-#import "RCTEventEmitter.h"
+#import <React/RCTBridge.h>
+#import <React/RCTEventEmitter.h>
 
 typedef NS_ENUM(NSInteger, QQShareScene) {
     QQ,

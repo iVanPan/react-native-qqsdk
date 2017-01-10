@@ -66,17 +66,14 @@ npm install --save react-native-qqsdk@latest
 
 6. Click the plus sign underneath the "Link Binary With Libraries" list and add the TencentOpenAPI.framework which locate in `../node_modules/react-native-qqsdk/ios/RCTQQSDK`. Then Under the "Build Settings" tab of your project configuration, find the "Framework Search Paths" section and edit the value. Add a new value, `$(SRCROOT)/../node_modules/react-native-qqsdk/ios/RCTQQSDK`.
 
-7. Under the "Build Settings" tab of your project configuration, find the "Header Search Paths" section and edit the value.
-Add a new value, `$(SRCROOT)/../node_modules/react-native-qqsdk/ios/RCTQQSDK` and select "recursive" in the dropdown.
+7. Under the "Info" tab of your project configuration, find the "URL Types" section and add your app Id.
 
-8. Under the "Info" tab of your project configuration, find the "URL Types" section and add your app Id.
-
-9. Under the "Info" tab of your project configuration, add LSApplicationQueriesSchemes For QQ SDK.
+8. Under the "Info" tab of your project configuration, add LSApplicationQueriesSchemes For QQ SDK.
   ![Add LSApplicationQueriesSchemes](https://github.com/iVanPan/react-native-qqsdk/blob/master/asset/%E5%B1%8F%E5%B9%95%E5%BF%AB%E7%85%A7%202016-12-13%2013.47.15.png)
-10. add following code to your AppDelegate.m 
+9. add following code to your AppDelegate.m 
 ```objectiv-c
 ...
-#import "RCTLinkingManager.h"
+#import <React/RCTLinkingManager.h>
 
 - (BOOL)application:(UIApplication *)application openURL:(NSURL *)url
   sourceApplication:(NSString *)sourceApplication annotation:(id)annotation

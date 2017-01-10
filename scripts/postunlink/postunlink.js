@@ -35,9 +35,9 @@ removeFrameworkAndSearchPath();
 
 
 function removeRCTLinkManagerHeader() {
-  var linkHeaderImportStatement = `#import "RCTLinkingManager.h"`;
+  var linkHeaderImportStatement = `#import <React/RCTLinkingManager.h>`;
   if (~appDelegateContents.indexOf(linkHeaderImportStatement)) {
-      console.log(`"RCTLinkingManager.h" header already imported.`);
+      console.log(`"RCTLinkingManager.h" header delete.`);
       appDelegateContents = appDelegateContents.replace(linkHeaderImportStatement,'');
   } 
   fs.writeFileSync(appDelegatePath, appDelegateContents);
@@ -119,13 +119,14 @@ function removeFrameworkAndSearchPath() {
       project.removeFromPbxFileReferenceSection(file);      // PBXFileReference
       project.removeFromFrameworksPbxGroup(file);           // PBXGroup
       project.removeFromPbxFrameworksBuildPhase(file);      // PBXFrameworksBuildPhase
-      removeSearchPaths(project,'"$(SRCROOT)/../node_modules/react-native/Libraries/**"','"$(SRCROOT)/../node_modules/react-native-qqsdk/ios/RCTQQSDK/**"');
+      //project.removeFromFrameworkSearchPaths(file);
+      removeSearchPaths(project,'"$(SRCROOT)/../node_modules/react-native-qqsdk/ios/RCTQQSDK/**"');
       fs.writeFileSync(projectPath, project.writeSync());
     }
   });
 }
 
-function removeSearchPaths(project, headerSearchPath, frameworkSearchPath) {
+function removeSearchPaths(project, frameworkSearchPath) {
   const config = project.pbxXCBuildConfigurationSection();
   Object
     .keys(config)
@@ -133,16 +134,8 @@ function removeSearchPaths(project, headerSearchPath, frameworkSearchPath) {
 .forEach(ref => {
       const buildSettings = config[ref].buildSettings;
     const shouldVisitBuildSettings = (
-        Array.isArray(buildSettings.HEADER_SEARCH_PATHS) ?
-          buildSettings.HEADER_SEARCH_PATHS :
-          []).filter(path => path.indexOf('react-native/React/**') >= 0).length > 0;
+        buildSettings['PRODUCT_NAME'] === package.name);
     if (shouldVisitBuildSettings) {
-      if (buildSettings['HEADER_SEARCH_PATHS']) {
-        const paths = _.remove(buildSettings['HEADER_SEARCH_PATHS'], function(path) {
-          return path !== headerSearchPath;
-        });
-        buildSettings['HEADER_SEARCH_PATHS'] = paths;
-      }
       if (buildSettings['FRAMEWORK_SEARCH_PATHS']) {
         const paths = _.remove(buildSettings['FRAMEWORK_SEARCH_PATHS'], function(path) {
           return path !== frameworkSearchPath;
