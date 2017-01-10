@@ -49,10 +49,7 @@ RCT_EXPORT_MODULE()
 }
 
 - (NSDictionary *)constantsToExport {
-    return @{@"Local": @(Local),
-             @"Base64": @(Base64),
-             @"Network": @(Network),
-             @"QQ": @(QQ),
+    return @{@"QQ": @(QQ),
              @"QQZone": @(QQZone),
              @"Favorite": @(Favorite),
              };
@@ -119,46 +116,23 @@ RCT_EXPORT_METHOD(shareText:(NSString *)text
     [self shareObjectWithData:@{@"text":text} Type:TextMessage Scene:scene];
 }
 
-RCT_EXPORT_METHOD(shareImage:(NSString *)image withImageType:(NSInteger)type
-                  title:(NSString *)title
+RCT_EXPORT_METHOD(shareImage:(NSString *)image
+                  withTitle:(NSString *)title
                   description:(NSString *)description
                   shareScene:(QQShareScene)scene
                   resolve:(RCTPromiseResolveBlock)resolve
                   reject:(RCTPromiseRejectBlock)reject) {
     shareReject = reject;
     shareResolve = resolve;
-    switch (type) {
-        case Local: {
-            NSData* imageData = [NSData dataWithContentsOfFile:image];
-            [self shareObjectWithData:@{@"image":imageData,
-                                        @"title":title,
-                                        @"description":description}
-                                 Type:ImageMesssage
-                                Scene:scene];
-        }
-            break;
-        case Network:{
-            NSURL* url = [NSURL URLWithString:[image stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]];
-            NSData *data = [NSData dataWithContentsOfURL:url];
-                [self shareObjectWithData:@{@"image":data,
-                                            @"title":title,
-                                            @"description":description}
-                                     Type:ImageMesssage Scene:scene];
-        }
-            break;
-        case Base64:{
-            NSData* imageData = [[NSData alloc] initWithBase64EncodedString:image options:0];
-            [self shareObjectWithData:@{@"image":imageData,
-                                        @"title":title,
-                                        @"description":description}
-                                 Type:ImageMesssage Scene:scene];
-        }
-            break;
-    }
+    NSData *imageData = [self processImage:image];
+    [self shareObjectWithData:@{@"image":imageData,
+                                @"title":title,
+                                @"description":description}
+                         Type:ImageMesssage
+                        Scene:scene];
 }
 RCT_EXPORT_METHOD(shareNews:(NSString *)url
-                  image:(NSString *)image
-                  withImageType:(NSInteger)type
+                  withImage:(NSString *)image
                   title:(NSString *)title
                   description:(NSString *)description
                   shareScene:(QQShareScene)scene
@@ -166,41 +140,17 @@ RCT_EXPORT_METHOD(shareNews:(NSString *)url
                   reject:(RCTPromiseRejectBlock)reject) {
     shareReject = reject;
     shareResolve = resolve;
-    switch (type) {
-        case Local: {
-            NSData* imageData = [NSData dataWithContentsOfFile:image];
-            [self shareObjectWithData:@{@"url":url,
-                                        @"image":imageData,
-                                        @"title":title,
-                                        @"description":description}
-                                 Type:NewsMessageWithLocalImage
-                                Scene:scene];
-        }
-            break;
-        case Network:
-            [self shareObjectWithData:@{@"url":url,
-                                        @"image":image,
-                                        @"title":title,
-                                        @"description":description}
-                                 Type:NewsMessageWithNetworkImage
-                                Scene:scene];
-            break;
-        case Base64: {
-            NSData* imageData =[[NSData alloc] initWithBase64EncodedString:image options:0];;
-            [self shareObjectWithData:@{@"url":url,
-                                        @"image":imageData,
-                                        @"title":title,
-                                        @"description":description}
-                                 Type:NewsMessageWithLocalImage
-                                Scene:scene];
-        }
-            break;
-    }
+    NSData *imageData = [self processImage:image];
+    [self shareObjectWithData:@{@"url":url,
+                                @"image":imageData,
+                                @"title":title,
+                                @"description":description}
+                         Type:NewsMessageWithLocalImage
+                        Scene:scene];
 }
 RCT_EXPORT_METHOD(shareAudio:(NSString *)previewUrl
-                  flashUrl:(NSString *)flashUrl
+                  withFlashUrl:(NSString *)flashUrl
                   image:(NSString *)image
-                  withImageType:(NSInteger)type
                   title:(NSString *)title
                   description:(NSString *)description
                   shareScene:(QQShareScene)scene
@@ -208,41 +158,14 @@ RCT_EXPORT_METHOD(shareAudio:(NSString *)previewUrl
                   reject:(RCTPromiseRejectBlock)reject) {
     shareReject = reject;
     shareResolve = resolve;
-    switch (type) {
-        case Local: {
-            NSData* imageData = [NSData dataWithContentsOfFile:image];
-            [self shareObjectWithData:@{@"url":previewUrl,
-                                        @"flashUrl":flashUrl,
-                                        @"image":imageData,
-                                        @"title":title,
-                                        @"description":description}
-                                 Type:AudioMessage
-                                Scene:scene];
-        }
-            break;
-        case Network:{
-            NSData* imageData = [NSData dataWithContentsOfURL:[NSURL URLWithString:[image stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]]];
-            [self shareObjectWithData:@{@"url":previewUrl,
-                                        @"flashUrl":flashUrl,
-                                        @"image":imageData,
-                                        @"title":title,
-                                        @"description":description}
-                                 Type:AudioMessage
-                                Scene:scene];
-        }
-            break;
-        case Base64: {
-            NSData* imageData =[[NSData alloc] initWithBase64EncodedString:image options:0];;
-            [self shareObjectWithData:@{@"url":previewUrl,
-                                        @"flashUrl":flashUrl,
-                                        @"image":imageData,
-                                        @"title":title,
-                                        @"description":description}
-                                 Type:AudioMessage
-                                Scene:scene];
-        }
-            break;
-    }
+    NSData *imageData = [self processImage:image];
+    [self shareObjectWithData:@{@"url":previewUrl,
+                                @"flashUrl":flashUrl,
+                                @"image":imageData,
+                                @"title":title,
+                                @"description":description}
+                         Type:AudioMessage
+                        Scene:scene];
 }
 
 RCT_EXPORT_METHOD(shareVideo:(NSString *)previewUrl
@@ -256,41 +179,14 @@ RCT_EXPORT_METHOD(shareVideo:(NSString *)previewUrl
                   reject:(RCTPromiseRejectBlock)reject) {
     shareReject = reject;
     shareResolve = resolve;
-    switch (type) {
-        case Local: {
-            NSData* imageData = [NSData dataWithContentsOfFile:image];
-            [self shareObjectWithData:@{@"url":previewUrl,
-                                        @"flashUrl":flashUrl,
-                                        @"image":imageData,
-                                        @"title":title,
-                                        @"description":description}
-                                 Type:VideoMessage
-                                Scene:scene];
-        }
-            break;
-        case Network:{
-            NSData* imageData = [NSData dataWithContentsOfURL:[NSURL URLWithString:[image stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]]];
-            [self shareObjectWithData:@{@"url":previewUrl,
-                                        @"flashUrl":flashUrl,
-                                        @"image":imageData,
-                                        @"title":title,
-                                        @"description":description}
-                                 Type:VideoMessage
-                                Scene:scene];
-        }
-            break;
-        case Base64: {
-            NSData* imageData =[[NSData alloc] initWithBase64EncodedString:image options:0];;
-            [self shareObjectWithData:@{@"url":previewUrl,
-                                        @"flashUrl":flashUrl,
-                                        @"image":imageData,
-                                        @"title":title,
-                                        @"description":description}
-                                 Type:VideoMessage
-                                Scene:scene];
-        }
-            break;
-    }
+    NSData *imageData = [self processImage:image];
+    [self shareObjectWithData:@{@"url":previewUrl,
+                                @"flashUrl":flashUrl,
+                                @"image":imageData,
+                                @"title":title,
+                                @"description":description}
+                         Type:VideoMessage
+                        Scene:scene];
 }
 
 -(void)shareTextToQQZone:(NSString *)text {
@@ -355,31 +251,6 @@ RCT_EXPORT_METHOD(shareVideo:(NSString *)previewUrl
                                                                 title:title
                                                           description:description
                                                      previewImageData:data];
-            switch (scene) {
-                case QQZone:
-                    [newsObj setCflag:kQQAPICtrlFlagQZoneShareOnStart];
-                    break;
-                case Favorite:
-                    [newsObj setCflag:kQQAPICtrlFlagQQShareFavorites];
-                    break;
-                default:
-                    [newsObj setCflag:kQQAPICtrlFlagQQShare];
-                    break;
-            }
-            SendMessageToQQReq* req = [SendMessageToQQReq reqWithContent:newsObj];
-            QQApiSendResultCode sent =[QQApiInterface sendReq:req];
-            [self handleSendResult:sent];
-        }
-            break;
-        case NewsMessageWithNetworkImage:{
-            NSURL* previewURL = [NSURL URLWithString:[shareData objectForKey:@"image"]];
-            NSURL* url = [NSURL URLWithString:[[shareData objectForKey:@"url"] stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]];
-            NSString* title = [shareData objectForKey:@"title"];
-            NSString* description = [shareData objectForKey:@"description"];
-            QQApiNewsObject* newsObj = [QQApiNewsObject objectWithURL:url
-                                                                title:title
-                                                          description:description
-                                                      previewImageURL:previewURL];
             switch (scene) {
                 case QQZone:
                     [newsObj setCflag:kQQAPICtrlFlagQZoneShareOnStart];
@@ -568,6 +439,30 @@ RCT_EXPORT_METHOD(shareVideo:(NSString *)previewUrl
             }
         }
     }
+}
+
+-(NSData*)processImage:(NSString *)image {
+    if([self isBase64Data:image]) {
+       return [[NSData alloc] initWithBase64EncodedString:image options:0];;
+    } else if([image hasPrefix:@"http://"] || [image hasPrefix:@"https://"]){
+        NSURL* url = [NSURL URLWithString:[image stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]];
+        return [NSData dataWithContentsOfURL:url];
+    } else {
+        return [NSData dataWithContentsOfFile:image];
+    }
+}
+-(BOOL)isBase64Data:(NSString *)data {
+    data=[[data componentsSeparatedByCharactersInSet:
+            [NSCharacterSet whitespaceAndNewlineCharacterSet]]
+           componentsJoinedByString:@""];
+    if ([data length] % 4 == 0) {
+        static NSCharacterSet *invertedBase64CharacterSet = nil;
+        if (invertedBase64CharacterSet == nil) {
+            invertedBase64CharacterSet = [[NSCharacterSet characterSetWithCharactersInString:@"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/="]invertedSet];
+        }
+        return [data rangeOfCharacterFromSet:invertedBase64CharacterSet options:NSLiteralSearch].location == NSNotFound;
+    }
+    return NO;
 }
 #pragma mark - QQApiInterfaceDelegate
 - (void)onReq:(QQBaseReq *)req {

@@ -31,6 +31,8 @@ import com.tencent.tauth.IUiListener;
 import com.tencent.tauth.Tencent;
 import com.tencent.tauth.UiError;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import org.json.JSONObject;
 
 import java.io.File;
@@ -55,11 +57,7 @@ class ShareScene {
     public static final int QQZone = 1;
     public static final int Favorite = 2;
 }
-class ImageType {
-    public static final int Local = 0;
-    public static final int Base64 = 1;
-    public static final int Network = 2;
-}
+
 public class QQSDK extends ReactContextBaseJavaModule {
 
     private static Tencent mTencent;
@@ -131,7 +129,7 @@ public class QQSDK extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod
-    public void checkClientInstalled(final Promise promise) {
+    public void checkClientInstalled(Promise promise) {
         Activity currentActivity = getCurrentActivity();
         if (null == currentActivity) {
             promise.reject("405",ACTIVITY_DOES_NOT_EXIST);
@@ -228,7 +226,7 @@ public class QQSDK extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod
-    public void shareImage(String image,int imageType,String title, String description,int shareScene, final Promise promise) {
+    public void shareImage(String image,String title, String description,int shareScene, final Promise promise) {
         final Activity currentActivity = getCurrentActivity();
         Log.d("图片地址",image);
         if (null == currentActivity) {
@@ -236,17 +234,7 @@ public class QQSDK extends ReactContextBaseJavaModule {
             return;
         }
         mPromise = promise;
-        if (imageType == ImageType.Network) {
-            image = saveBitmapToFile(getBitmapFromURL(image));
-        } else if (imageType == ImageType.Local){
-            File file = new File(image);
-            if(!file.exists()) {
-                image = dealLocalTypeFile(image);
-                Log.d("转化后图片地址",image);
-            }
-        } else if(imageType == ImageType.Base64) {
-            image = saveBitmapToFile(decodeBase64ToBitmap(image));
-        }
+        image = processImage(image);
         final Bundle params = new Bundle();
         switch (shareScene) {
             case ShareScene.QQ:
@@ -302,29 +290,21 @@ public class QQSDK extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod
-    public void shareNews(String url,String image,int imageType,String title, String description,int shareScene, final Promise promise) {
+    public void shareNews(String url,String image,String title, String description,int shareScene, final Promise promise) {
         final Activity currentActivity = getCurrentActivity();
         if (null == currentActivity) {
             promise.reject("405",ACTIVITY_DOES_NOT_EXIST);
             return;
         }
         mPromise = promise;
-        if(imageType == ImageType.Base64) {
-            image = saveBitmapToFile(decodeBase64ToBitmap(image));
-        } else if (imageType == ImageType.Local){
-            File file = new File(image);
-            if(!file.exists()) {
-                image = dealLocalTypeFile(image);
-            }
-        }
         final Bundle params = new Bundle();
         switch (shareScene) {
             case ShareScene.QQ:
                 params.putInt(QQShare.SHARE_TO_QQ_KEY_TYPE, QQShare.SHARE_TO_QQ_TYPE_DEFAULT);
-                if(imageType == ImageType.Network) {
+                if(image.startsWith("http://")||image.startsWith("https://")) {
                     params.putString(QQShare.SHARE_TO_QQ_IMAGE_URL,image);
-                } else  {
-                    params.putString(QQShare.SHARE_TO_QQ_IMAGE_LOCAL_URL,image);
+                } else {
+                    params.putString(QQShare.SHARE_TO_QQ_IMAGE_LOCAL_URL,processImage(image));
                 }
                 params.putString(QQShare.SHARE_TO_QQ_TITLE, title);
                 params.putString(QQShare.SHARE_TO_QQ_TARGET_URL, url);
@@ -339,6 +319,7 @@ public class QQSDK extends ReactContextBaseJavaModule {
                 UiThreadUtil.runOnUiThread(qqRunnable);
                 break;
             case ShareScene.Favorite:
+                image = processImage(image);
                 params.putInt(GameAppOperation.QQFAV_DATALINE_REQTYPE, GameAppOperation.QQFAV_DATALINE_TYPE_DEFAULT);
                 params.putString(GameAppOperation.QQFAV_DATALINE_TITLE, title);
                 params.putString(GameAppOperation.QQFAV_DATALINE_DESCRIPTION,description);
@@ -354,6 +335,7 @@ public class QQSDK extends ReactContextBaseJavaModule {
                 UiThreadUtil.runOnUiThread(favoritesRunnable);
                 break;
             case ShareScene.QQZone:
+                image = processImage(image);
                 ArrayList<String> imageUrls = new ArrayList<String>();
                 imageUrls.add(image);
                 params.putInt(QzoneShare.SHARE_TO_QZONE_KEY_TYPE, QzoneShare.SHARE_TO_QZONE_TYPE_IMAGE_TEXT);
@@ -378,29 +360,21 @@ public class QQSDK extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod
-    public void shareAudio(String url,String flashUrl,String image,int imageType,String title, String description,int shareScene, final Promise promise) {
+    public void shareAudio(String url,String flashUrl,String image,String title, String description,int shareScene, final Promise promise) {
         final Activity currentActivity = getCurrentActivity();
         if (null == currentActivity) {
             promise.reject("405",ACTIVITY_DOES_NOT_EXIST);
             return;
         }
         mPromise = promise;
-        if(imageType == ImageType.Base64) {
-            image = saveBitmapToFile(decodeBase64ToBitmap(image));
-        }else if (imageType == ImageType.Local){
-            File file = new File(image);
-            if(!file.exists()) {
-                image = dealLocalTypeFile(image);
-            }
-        }
         final Bundle params = new Bundle();
         switch (shareScene) {
             case ShareScene.QQ:
                 params.putInt(QQShare.SHARE_TO_QQ_KEY_TYPE, QQShare.SHARE_TO_QQ_TYPE_DEFAULT);
-                if(imageType == ImageType.Network) {
+                if(image.startsWith("http://")||image.startsWith("https://")) {
                     params.putString(QQShare.SHARE_TO_QQ_IMAGE_URL,image);
-                } else  {
-                    params.putString(QQShare.SHARE_TO_QQ_IMAGE_LOCAL_URL,image);
+                } else {
+                    params.putString(QQShare.SHARE_TO_QQ_IMAGE_LOCAL_URL,processImage(image));
                 }
                 params.putString(QQShare.SHARE_TO_QQ_AUDIO_URL, flashUrl);
                 params.putString(QQShare.SHARE_TO_QQ_TITLE, title);
@@ -416,6 +390,7 @@ public class QQSDK extends ReactContextBaseJavaModule {
                 UiThreadUtil.runOnUiThread(qqRunnable);
                 break;
             case ShareScene.Favorite:
+                image = processImage(image);
                 params.putInt(GameAppOperation.QQFAV_DATALINE_REQTYPE, GameAppOperation.QQFAV_DATALINE_TYPE_DEFAULT);
                 params.putString(GameAppOperation.QQFAV_DATALINE_TITLE, title);
                 params.putString(GameAppOperation.QQFAV_DATALINE_DESCRIPTION,description);
@@ -432,6 +407,7 @@ public class QQSDK extends ReactContextBaseJavaModule {
                 UiThreadUtil.runOnUiThread(favoritesRunnable);
                 break;
             case ShareScene.QQZone:
+                image = processImage(image);
                 ArrayList<String> imageUrls = new ArrayList<String>();
                 imageUrls.add(image);
                 params.putInt(QzoneShare.SHARE_TO_QZONE_KEY_TYPE, QzoneShare.SHARE_TO_QZONE_TYPE_IMAGE_TEXT);
@@ -455,7 +431,7 @@ public class QQSDK extends ReactContextBaseJavaModule {
         }
     }
     @ReactMethod
-    public void shareVideo(String url,String flashUrl,String image,int imageType,String title, String description,int shareScene, final Promise promise) {
+    public void shareVideo(String url,String flashUrl,String image,String title, String description,int shareScene, final Promise promise) {
         final Activity currentActivity = getCurrentActivity();
         if (null == currentActivity) {
             promise.reject("405",ACTIVITY_DOES_NOT_EXIST);
@@ -495,9 +471,6 @@ public class QQSDK extends ReactContextBaseJavaModule {
     @Override
     public Map<String, Object> getConstants() {
         final Map<String, Object> constants = new HashMap<>();
-        constants.put("Local", ImageType.Local);
-        constants.put("Base64", ImageType.Base64);
-        constants.put("Network", ImageType.Network);
         constants.put("QQ", ShareScene.QQ);
         constants.put("QQZone", ShareScene.QQZone);
         constants.put("Favorite", ShareScene.Favorite);
@@ -536,9 +509,39 @@ public class QQSDK extends ReactContextBaseJavaModule {
         final String AppName = (String)((applicationInfo != null) ? packageManager.getApplicationLabel(applicationInfo) : "AppName");
         return AppName;
     }
+    private String processImage(String image) {
+        if(image.startsWith("http://") || image.startsWith("https://")) {
+            return saveBitmapToFile(getBitmapFromURL(image));
+        } else if (isBase64(image)) {
+            return saveBitmapToFile(decodeBase64ToBitmap(image));
+        } else if (image.startsWith("file://") || image.startsWith("/") ){
+            File file = new File(image);
+            return file.getAbsolutePath();
+        } else {
+            return saveBitmapToFile(BitmapFactory.decodeResource(getReactApplicationContext().getResources(),getDrawableFileID(image)));
+        }
+    }
 
-    /** 获取Drawble资源的文件ID
-     *
+  /**
+   * 检查图片字符串是不是Base64
+   * @param image
+   * @return
+   */
+    private boolean isBase64(String image) {
+        try {
+            byte[] decodedString = Base64.decode(image, Base64.DEFAULT);
+            Bitmap bitmap = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
+            if (bitmap == null) {
+                return false;
+            }
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    /**
+     * 获取Drawble资源的文件ID
      * @param imageName
      * @return
      */
@@ -547,11 +550,13 @@ public class QQSDK extends ReactContextBaseJavaModule {
         int id = sResourceDrawableIdHelper.getResourceDrawableId(getReactApplicationContext(),imageName);
         return id;
     }
-    private String dealLocalTypeFile(String image) {
-        Bitmap bitmap = BitmapFactory.decodeResource(getReactApplicationContext().getResources(),getDrawableFileID(image));
-        return  saveBitmapToFile(bitmap);
-    }
-    public static Bitmap getBitmapFromURL(String src) {
+
+  /**
+   * 根据图片的URL转化层Bitmap
+   * @param src
+   * @return
+   */
+    private static Bitmap getBitmapFromURL(String src) {
         try {
             URL url = new URL(src);
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
