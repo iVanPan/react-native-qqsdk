@@ -15,16 +15,16 @@ A React Native wrapper around the Tencent QQ SDK for Android and iOS. Provides a
 - [Documentation](#documentation)     
   - [Support API](#support-api)
   - [Error Code](#error-code)
-  - [Image](#image)
+  - [Image](#image)  
   - [Usage](#usage)
     - [checkClientInstalled](#checkclientinstalled)
-  - [ssoLogin](#ssologin)
-  - [logout](#logout)
-  - [shareText](#sharetext)
-  - [shareImage](#shareimage)
-  - [shareNews](#sharenews)
-  - [shareAudio](#shareaudio)
-  - [getUserInfo](#getuserinfo)
+    - [ssoLogin](#ssologin)
+    - [logout](#logout)
+    - [shareText](#sharetext)
+    - [shareImage](#shareimage)
+    - [shareNews](#sharenews)
+    - [shareAudio](#shareaudio)
+    - [getUserInfo](#getuserinfo)
 - [About SDK](#about-sdk) 
 - [Contributing](#contributing) 
 - [License](#license) 
@@ -167,7 +167,8 @@ public class MainApplication extends Application implements ReactApplication {
   1. Network URL
   2. Base64
   3. Absolute file path
- also support resolveAssetSource,for example, resolveAssetSource(require('./news.jpg')).uri
+ also support resolveAssetSource,for example, resolveAssetSource(require('./news.jpg')).uri           
+ 
 ###Usage
 #####checkClientInstalled
   ```js
