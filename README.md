@@ -1,5 +1,5 @@
 # react-native-qqsdk
-[![version](https://img.shields.io/badge/version-0.6.1-blue.svg?style=flat)](https://github.com/iVanPan/react-native-qqsdk)
+[![version](https://img.shields.io/badge/version-0.6.4-blue.svg?style=flat)](https://github.com/iVanPan/react-native-qqsdk)
 [![platform](https://img.shields.io/badge/platform-iOS%2FAndroid-lightgrey.svg?style=flat)](https://github.com/iVanPan/react-native-qqsdk)
 [![GitHub license](https://img.shields.io/github/license/mashape/apistatus.svg?style=flat)](https://github.com/iVanPan/react-native-qqsdk/blob/master/LICENSE)
 [![Contact](https://img.shields.io/badge/contact-Van-green.svg?style=flat)](http://VanPan.me)     
