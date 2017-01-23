@@ -1,5 +1,5 @@
 # react-native-qqsdk
-[![version](https://img.shields.io/badge/version-0.6.4-blue.svg?style=flat-square)](https://github.com/iVanPan/react-native-qqsdk)
+[![version](https://img.shields.io/badge/version-0.6.6-blue.svg?style=flat-square)](https://github.com/iVanPan/react-native-qqsdk)
 [![platform](https://img.shields.io/badge/platform-iOS%2FAndroid-lightgrey.svg?style=flat-square)](https://github.com/iVanPan/react-native-qqsdk)
 [![GitHub license](https://img.shields.io/github/license/mashape/apistatus.svg?style=flat-square)](https://github.com/iVanPan/react-native-qqsdk/blob/master/LICENSE)
 [![Contact](https://img.shields.io/badge/contact-Van-green.svg?style=flat-square)](http://VanPan.me)     
@@ -235,7 +235,7 @@ var url = "https://graph.qq.com/user/get_user_info?access_token=" + accessToken 
 http.get(url)
 ```
 ## About SDK 
-This plugin use 3.1.1 version sdk for Android,3.1.3 version sdk for iOS. You can download lastest version sdk [here](http://wiki.connect.qq.com/sdk%E4%B8%8B%E8%BD%BD)
+This plugin use 3.1.2 version sdk for Android,3.1.3 version sdk for iOS. You can download lastest version sdk [here](http://wiki.connect.qq.com/sdk%E4%B8%8B%E8%BD%BD)
 ## Contributing
 Feel free to contribute
 
