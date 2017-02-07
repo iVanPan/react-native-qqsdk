@@ -27,5 +27,5 @@ typedef NS_ENUM(NSInteger, QQShareType) {
     VideoMessage,
 };
 
-@interface RCTQQSDK :RCTEventEmitter <TencentSessionDelegate,QQApiInterfaceDelegate>
+@interface RCTQQSDK : RCTEventEmitter <TencentSessionDelegate, QQApiInterfaceDelegate>
 @end

@@ -8,6 +8,6 @@
 
 #import <React/RCTConvert.h>
 #import "RCTQQSDK.h"
-@interface RCTConvert(QQShareScene)
+@interface RCTConvert (QQShareScene)
 + (QQShareScene)QQShareScene:(id)json;
 @end
