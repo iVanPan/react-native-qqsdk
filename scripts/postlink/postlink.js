@@ -5,7 +5,7 @@ var xcode = require('xcode');
 var path = require('path');
 var plist = require('plist');
 var _ = require('lodash');
-var pbxFile = require('../pbxFile');
+var pbxFile = require('xcode/lib/pbxFile');
 var package = require('../../../../package.json');
 
 var ignoreNodeModules = { ignore: "node_modules/**" };
