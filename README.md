@@ -1,10 +1,13 @@
 # react-native-qqsdk
-[![version](https://img.shields.io/badge/version-0.6.6-blue.svg?style=flat-square)](https://github.com/iVanPan/react-native-qqsdk)
+[![version](https://img.shields.io/badge/version-0.6.8-blue.svg?style=flat-square)](https://github.com/iVanPan/react-native-qqsdk)
 [![platform](https://img.shields.io/badge/platform-iOS%2FAndroid-lightgrey.svg?style=flat-square)](https://github.com/iVanPan/react-native-qqsdk)
 [![GitHub license](https://img.shields.io/github/license/mashape/apistatus.svg?style=flat-square)](https://github.com/iVanPan/react-native-qqsdk/blob/master/LICENSE)
-[![Contact](https://img.shields.io/badge/contact-Van-green.svg?style=flat-square)](http://VanPan.me)     
+[![Contact](https://img.shields.io/badge/contact-Van-green.svg?style=flat-square)](http://VanPan.me)                  
+
 
 A React Native wrapper around the Tencent QQ SDK for Android and iOS. Provides access to QQ ssoLogin, QQ Sharing, QQ Zone Sharing etc.
+
+
 ## Table of Contents
 
 - [Feature](#feature)
@@ -229,16 +232,20 @@ QQ.shareAudio(audioPreviewUrl,audioUrl,imgUrl,'十年','陈奕迅',QQ.shareScene
 .catch((error)=>{console.log('error is', error)});
 
   ```
+
 #####getUserInfo
 ```js
 var url = "https://graph.qq.com/user/get_user_info?access_token=" + accessToken + "&oauth_consumer_key= APPID &openid=" + userId;
 http.get(url)
 ```
+
+
 ## About SDK 
-This plugin use 3.1.2 version sdk for Android,3.1.3 version sdk for iOS. You can download lastest version sdk [here](http://wiki.connect.qq.com/sdk%E4%B8%8B%E8%BD%BD)
+This plugin use 3.1.2 version sdk for Android,3.1.3 version sdk for iOS. You can download lastest version sdk [here](http://wiki.connect.qq.com/sdk%E4%B8%8B%E8%BD%BD)                        
+
 ## Contributing
 Feel free to contribute
-
+                
 ## License
 
 **react-native-qqsdk** is released under the **MIT** license. See [LICENSE](https://github.com/iVanPan/react-native-qqsdk/blob/master/LICENSE) file for more information.
