@@ -9,9 +9,9 @@
 #import "RCTQQSDK.h"
 
 NSString *QQ_NOT_INSTALLED = @"QQ Client is not installed";
-NSString *QQ_PARAM_NOT_FOUND = @"param is not found";
 NSString *QQ_LOGIN_ERROR = @"QQ login error";
 NSString *QQ_LOGIN_CANCEL = @"QQ login cancelled";
+NSString *QQ_IMAGE_PARAM_INCORRECT = @"image param is incorrect";
 NSString *QQ_LOGIN_NETWORK_ERROR = @"QQ login network error";
 NSString *QQ_SHARE_CANCEL = @"QQ share cancelled by user";
 NSString *QQ_OTHER_ERROR = @"other error happened";
@@ -124,11 +124,15 @@ RCT_EXPORT_METHOD(shareImage:(NSString *)image
     shareReject = reject;
     shareResolve = resolve;
     NSData *imageData = [self processImage:image];
-    [self shareObjectWithData:@{@"image":imageData,
-                                @"title":title,
-                                @"description":description}
-                         Type:ImageMesssage
-                        Scene:scene];
+    if(!imageData) {
+        shareReject(@"500", QQ_IMAGE_PARAM_INCORRECT, nil);
+    } else {
+        [self shareObjectWithData:@{@"image":imageData,
+                                    @"title":title,
+                                    @"description":description}
+                             Type:ImageMesssage
+                            Scene:scene];
+    }
 }
 RCT_EXPORT_METHOD(shareNews:(NSString *)url
                   image:(NSString *)image
@@ -140,12 +144,16 @@ RCT_EXPORT_METHOD(shareNews:(NSString *)url
     shareReject = reject;
     shareResolve = resolve;
     NSData *imageData = [self processImage:image];
-    [self shareObjectWithData:@{@"url":url,
-                                @"image":imageData,
-                                @"title":title,
-                                @"description":description}
-                         Type:NewsMessageWithLocalImage
-                        Scene:scene];
+    if(!imageData) {
+        shareReject(@"500", QQ_IMAGE_PARAM_INCORRECT, nil);
+    } else {
+        [self shareObjectWithData:@{@"url":url,
+                                    @"image":imageData,
+                                    @"title":title,
+                                    @"description":description}
+                             Type:NewsMessageWithLocalImage
+                            Scene:scene];
+    }
 }
 RCT_EXPORT_METHOD(shareAudio:(NSString *)previewUrl
                   flashUrl:(NSString *)flashUrl
@@ -158,13 +166,17 @@ RCT_EXPORT_METHOD(shareAudio:(NSString *)previewUrl
     shareReject = reject;
     shareResolve = resolve;
     NSData *imageData = [self processImage:image];
-    [self shareObjectWithData:@{@"url":previewUrl,
+    if (!imageData) {
+        shareReject(@"500", QQ_IMAGE_PARAM_INCORRECT, nil);
+    } else {
+        [self shareObjectWithData:@{@"url":previewUrl,
                                 @"flashUrl":flashUrl,
                                 @"image":imageData,
                                 @"title":title,
                                 @"description":description}
                          Type:AudioMessage
-                        Scene:scene];
+                        Scene:scene];    
+    }
 }
 
 RCT_EXPORT_METHOD(shareVideo:(NSString *)previewUrl
@@ -447,6 +459,7 @@ RCT_EXPORT_METHOD(shareVideo:(NSString *)previewUrl
         return [NSData dataWithContentsOfFile:image];
     }
 }
+
 - (BOOL)isBase64Data:(NSString *)data {
     data = [[data componentsSeparatedByCharactersInSet:
                       [NSCharacterSet whitespaceAndNewlineCharacterSet]]
@@ -460,6 +473,7 @@ RCT_EXPORT_METHOD(shareVideo:(NSString *)previewUrl
     }
     return NO;
 }
+
 #pragma mark - QQApiInterfaceDelegate
 - (void)onReq:(QQBaseReq *)req {
 }
