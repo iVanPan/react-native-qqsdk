@@ -31,8 +31,6 @@ import com.tencent.tauth.IUiListener;
 import com.tencent.tauth.Tencent;
 import com.tencent.tauth.UiError;
 
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import org.json.JSONObject;
 
 import java.io.File;
