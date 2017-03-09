@@ -7,11 +7,11 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "RCTBridgeModule.h"
 #import <TencentOpenAPI/QQApiInterface.h>
 #import <TencentOpenAPI/TencentOAuth.h>
-#import "RCTBridge.h"
-#import "RCTEventEmitter.h"
+#import <React/RCTBridge.h>
+#import <React/RCTEventEmitter.h>
+#import <React/RCTBridgeModule.h>
 
 typedef NS_ENUM(NSInteger, QQShareScene) {
     QQ,
@@ -27,5 +27,5 @@ typedef NS_ENUM(NSInteger, QQShareType) {
     VideoMessage,
 };
 
-@interface RCTQQSDK :RCTEventEmitter <TencentSessionDelegate,QQApiInterfaceDelegate>
+@interface RCTQQSDK : RCTEventEmitter <TencentSessionDelegate, QQApiInterfaceDelegate>
 @end

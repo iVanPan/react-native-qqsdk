@@ -6,8 +6,8 @@
 //  Copyright © 2016年 Van. All rights reserved.
 //
 
-#import <RCTConvert.h>
+#import <React/RCTConvert.h>
 #import "RCTQQSDK.h"
-@interface RCTConvert(QQShareScene)
+@interface RCTConvert (QQShareScene)
 + (QQShareScene)QQShareScene:(id)json;
 @end

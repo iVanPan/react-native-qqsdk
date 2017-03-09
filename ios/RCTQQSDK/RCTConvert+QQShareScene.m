@@ -8,9 +8,11 @@
 
 #import "RCTConvert+QQShareScene.h"
 
-@implementation RCTConvert(QQShareScene)
-RCT_ENUM_CONVERTER(QQShareScene, (@{@"QQ": @(QQ),
-                                    @"QQZone": @(QQZone),
-                                    @"Favorite": @(Favorite),
-                                    }), QQ, integerValue)
+@implementation RCTConvert (QQShareScene)
+RCT_ENUM_CONVERTER(QQShareScene, (@{
+                       @"QQ" : @(QQ),
+                       @"QQZone" : @(QQZone),
+                       @"Favorite" : @(Favorite),
+                   }),
+                   QQ, integerValue)
 @end
