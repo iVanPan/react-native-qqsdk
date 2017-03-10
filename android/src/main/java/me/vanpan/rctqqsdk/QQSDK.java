@@ -7,10 +7,10 @@ import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
-import android.os.Environment;
 import android.text.TextUtils;
 import android.util.Base64;
 import android.util.Log;
+import android.webkit.URLUtil;
 
 import com.facebook.react.bridge.ActivityEventListener;
 import com.facebook.react.bridge.Arguments;
@@ -170,7 +170,7 @@ public class QQSDK extends ReactContextBaseJavaModule {
                 public void run() {
                     mPromise = promise;
                     mTencent.login(currentActivity, "all",
-                            loginListener);
+                        loginListener);
                 }
             };
             UiThreadUtil.runOnUiThread(runnable);
@@ -481,8 +481,8 @@ public class QQSDK extends ReactContextBaseJavaModule {
     private String getAppID(ReactApplicationContext reactContext) {
         try {
             ApplicationInfo appInfo = reactContext.getPackageManager()
-                    .getApplicationInfo(reactContext.getPackageName(),
-                            PackageManager.GET_META_DATA);
+                .getApplicationInfo(reactContext.getPackageName(),
+                    PackageManager.GET_META_DATA);
             String key = appInfo.metaData.get("QQ_APP_ID").toString();
             return key;
         } catch (PackageManager.NameNotFoundException e) {
@@ -506,11 +506,11 @@ public class QQSDK extends ReactContextBaseJavaModule {
         return AppName;
     }
     private String processImage(String image) {
-        if(image.startsWith("http://") || image.startsWith("https://")) {
+        if(URLUtil.isHttpUrl(image) || URLUtil.isHttpsUrl(image)) {
             return saveBitmapToFile(getBitmapFromURL(image));
         } else if (isBase64(image)) {
             return saveBitmapToFile(decodeBase64ToBitmap(image));
-        } else if (image.startsWith("file://") || image.startsWith("/") ){
+        } else if (URLUtil.isFileUrl(image) || image.startsWith("/") ){
             File file = new File(image);
             return file.getAbsolutePath();
         } else {
@@ -518,11 +518,11 @@ public class QQSDK extends ReactContextBaseJavaModule {
         }
     }
 
-  /**
-   * 检查图片字符串是不是Base64
-   * @param image
-   * @return
-   */
+    /**
+     * 检查图片字符串是不是Base64
+     * @param image
+     * @return
+     */
     private boolean isBase64(String image) {
         try {
             byte[] decodedString = Base64.decode(image, Base64.DEFAULT);
@@ -547,11 +547,11 @@ public class QQSDK extends ReactContextBaseJavaModule {
         return id;
     }
 
-  /**
-   * 根据图片的URL转化层Bitmap
-   * @param src
-   * @return
-   */
+    /**
+     * 根据图片的URL转化层Bitmap
+     * @param src
+     * @return
+     */
     private static Bitmap getBitmapFromURL(String src) {
         try {
             URL url = new URL(src);
@@ -605,10 +605,7 @@ public class QQSDK extends ReactContextBaseJavaModule {
      * @return
      */
     private File getOutputMediaFile(){
-        File mediaStorageDir = new File(Environment.getExternalStorageDirectory()
-                + "/Android/data/"
-                + getReactApplicationContext().getPackageName()
-                + "/Files");
+        File mediaStorageDir = getCurrentActivity().getExternalCacheDir();
         if (! mediaStorageDir.exists()){
             if (! mediaStorageDir.mkdirs()){
                 return null;
@@ -633,7 +630,7 @@ public class QQSDK extends ReactContextBaseJavaModule {
             String expires = jsonObject.getString(Constants.PARAM_EXPIRES_IN);
             String openId = jsonObject.getString(Constants.PARAM_OPEN_ID);
             if (!TextUtils.isEmpty(token) && !TextUtils.isEmpty(expires)
-                    && !TextUtils.isEmpty(openId)) {
+                && !TextUtils.isEmpty(openId)) {
                 mTencent.setAccessToken(token, expires);
                 mTencent.setOpenId(openId);
             }
@@ -737,4 +734,3 @@ public class QQSDK extends ReactContextBaseJavaModule {
         }
     };
 }
-
