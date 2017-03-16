@@ -241,7 +241,7 @@ http.get(url)
 
 
 ## About SDK 
-This plugin use 3.1.2 version sdk for Android,3.1.3 version sdk for iOS. You can download lastest version sdk [here](http://wiki.connect.qq.com/sdk%E4%B8%8B%E8%BD%BD)                        
+This plugin use 3.1.3 version sdk for Android,3.1.3 version sdk for iOS. You can download lastest version sdk [here](http://wiki.open.qq.com/wiki/mobile/SDK%E4%B8%8B%E8%BD%BD)                        
 
 ## Contributing
 Feel free to contribute
