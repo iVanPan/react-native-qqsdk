@@ -6,12 +6,13 @@ import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Base64;
 import android.util.Log;
-import android.webkit.URLUtil;
 
+import android.webkit.URLUtil;
 import com.facebook.react.bridge.ActivityEventListener;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.BaseActivityEventListener;
@@ -297,7 +298,7 @@ public class QQSDK extends ReactContextBaseJavaModule {
         switch (shareScene) {
             case ShareScene.QQ:
                 params.putInt(QQShare.SHARE_TO_QQ_KEY_TYPE, QQShare.SHARE_TO_QQ_TYPE_DEFAULT);
-                if(image.startsWith("http://")||image.startsWith("https://")) {
+                if(URLUtil.isNetworkUrl(image)) {
                     params.putString(QQShare.SHARE_TO_QQ_IMAGE_URL,image);
                 } else {
                     params.putString(QQShare.SHARE_TO_QQ_IMAGE_LOCAL_URL,processImage(image));
@@ -367,7 +368,7 @@ public class QQSDK extends ReactContextBaseJavaModule {
         switch (shareScene) {
             case ShareScene.QQ:
                 params.putInt(QQShare.SHARE_TO_QQ_KEY_TYPE, QQShare.SHARE_TO_QQ_TYPE_DEFAULT);
-                if(image.startsWith("http://")||image.startsWith("https://")) {
+                if(URLUtil.isNetworkUrl(image)) {
                     params.putString(QQShare.SHARE_TO_QQ_IMAGE_URL,image);
                 } else {
                     params.putString(QQShare.SHARE_TO_QQ_IMAGE_LOCAL_URL,processImage(image));
@@ -505,6 +506,12 @@ public class QQSDK extends ReactContextBaseJavaModule {
         final String AppName = (String)((applicationInfo != null) ? packageManager.getApplicationLabel(applicationInfo) : "AppName");
         return AppName;
     }
+
+    /**
+     * 图片处理
+     * @param image
+     * @return
+     */
     private String processImage(String image) {
         if(URLUtil.isHttpUrl(image) || URLUtil.isHttpsUrl(image)) {
             return saveBitmapToFile(getBitmapFromURL(image));
@@ -513,6 +520,8 @@ public class QQSDK extends ReactContextBaseJavaModule {
         } else if (URLUtil.isFileUrl(image) || image.startsWith("/") ){
             File file = new File(image);
             return file.getAbsolutePath();
+        } else if(URLUtil.isContentUrl(image)) {
+            return saveBitmapToFile(getBitmapFromUri(Uri.parse(image)));
         } else {
             return saveBitmapToFile(BitmapFactory.decodeResource(getReactApplicationContext().getResources(),getDrawableFileID(image)));
         }
@@ -579,6 +588,22 @@ public class QQSDK extends ReactContextBaseJavaModule {
     }
 
     /**
+     * 根据uri生成Bitmap
+     * @param uri
+     * @return
+     */
+    private Bitmap getBitmapFromUri(Uri uri) {
+        try{
+            InputStream inStream = this.getCurrentActivity().getContentResolver().openInputStream(uri);
+            Bitmap bitmap = BitmapFactory.decodeStream(inStream);
+            return  bitmap;
+        }catch (FileNotFoundException e) {
+            Log.d(TAG, "File not found: " + e.getMessage());
+        }
+        return null;
+    }
+
+    /**
      * 将bitmap 保存成文件
      * @param bitmap
      * @return
@@ -615,6 +640,7 @@ public class QQSDK extends ReactContextBaseJavaModule {
         File mediaFile;
         String mImageName="RN_"+ timeStamp +".jpg";
         mediaFile = new File(mediaStorageDir.getPath() + File.separator + mImageName);
+        Log.d("path is",mediaFile.getPath());
         return mediaFile;
     }
 
