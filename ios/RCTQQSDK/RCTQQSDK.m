@@ -528,6 +528,7 @@ RCT_EXPORT_METHOD(shareVideo:(NSString *)previewUrl
 
 - (void)tencentDidLogout {
     if (logoutResolve) {
+        tencentOAuth = nil;
         logoutResolve(@YES);
         logoutReject = nil;
     }
