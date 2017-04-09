@@ -253,7 +253,7 @@ RCT_EXPORT_METHOD(shareVideo:(NSString *)previewUrl
         } break;
         case NewsMessageWithLocalImage: {
             NSData *data = [shareData objectForKey:@"image"];
-            NSURL *url = [NSURL URLWithString:[[shareData objectForKey:@"url"] stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]];
+            NSURL *url = [NSURL URLWithString:[shareData objectForKey:@"url"];
             NSString *title = [shareData objectForKey:@"title"];
             NSString *description = [shareData objectForKey:@"description"];
             QQApiNewsObject *newsObj = [QQApiNewsObject objectWithURL:url
@@ -451,9 +451,8 @@ RCT_EXPORT_METHOD(shareVideo:(NSString *)previewUrl
 - (NSData *)processImage:(NSString *)image {
     if ([self isBase64Data:image]) {
         return [[NSData alloc] initWithBase64EncodedString:image options:0];
-        ;
     } else if ([image hasPrefix:@"http://"] || [image hasPrefix:@"https://"]) {
-        NSURL *url = [NSURL URLWithString:[image stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]];
+        NSURL *url = [NSURL URLWithString:image];
         return [NSData dataWithContentsOfURL:url];
     } else {
         return [NSData dataWithContentsOfFile:image];
