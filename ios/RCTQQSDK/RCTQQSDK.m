@@ -253,7 +253,7 @@ RCT_EXPORT_METHOD(shareVideo:(NSString *)previewUrl
         } break;
         case NewsMessageWithLocalImage: {
             NSData *data = [shareData objectForKey:@"image"];
-            NSURL *url = [NSURL URLWithString:[shareData objectForKey:@"url"];
+            NSURL *url = [NSURL URLWithString:[shareData objectForKey:@"url"]];
             NSString *title = [shareData objectForKey:@"title"];
             NSString *description = [shareData objectForKey:@"description"];
             QQApiNewsObject *newsObj = [QQApiNewsObject objectWithURL:url
