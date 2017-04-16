@@ -153,30 +153,22 @@ public class QQSDK extends ReactContextBaseJavaModule {
 
     @ReactMethod
     public void ssoLogin(final Promise promise) {
-        if (mTencent.isSessionValid()) {
-            WritableMap map = Arguments.createMap();
-            map.putString("userid", mTencent.getOpenId());
-            map.putString("access_token", mTencent.getAccessToken());
-            map.putDouble("expires_time", mTencent.getExpiresIn());
-            promise.resolve(map);
-        } else {
-            final Activity currentActivity = getCurrentActivity();
-            if (null == currentActivity) {
-                promise.reject("405",ACTIVITY_DOES_NOT_EXIST);
-                return;
-            }
-            Runnable runnable = new Runnable() {
-
-                @Override
-                public void run() {
-                    mPromise = promise;
-                    mTencent.login(currentActivity, "all",
-                        loginListener);
-                }
-            };
-            UiThreadUtil.runOnUiThread(runnable);
+        final Activity currentActivity = getCurrentActivity();
+        if (null == currentActivity) {
+            promise.reject("405",ACTIVITY_DOES_NOT_EXIST);
+            return;
         }
+        Runnable runnable = new Runnable() {
+            @Override
+            public void run() {
+                mPromise = promise;
+                mTencent.login(currentActivity, "all",
+                    loginListener);
+            }
+        };
+        UiThreadUtil.runOnUiThread(runnable);
     }
+    
     @ReactMethod
     public void shareText(String text,int shareScene, final Promise promise) {
         final Activity currentActivity = getCurrentActivity();
