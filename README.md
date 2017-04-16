@@ -1,6 +1,6 @@
 # react-native-qqsdk
-[![npm](https://img.shields.io/npm/v/npm.svg)](https://www.npmjs.com/package/react-native-qqsdk)
-[![npm](https://img.shields.io/npm/dm/localeval.svg)](https://www.npmjs.com/package/react-native-qqsdk)
+[![npm](https://img.shields.io/npm/v/react-native-qqsdk.svg)](https://www.npmjs.com/package/react-native-qqsdk)
+[![npm](https://img.shields.io/npm/dm/react-native-qqsdk.svg)](https://www.npmjs.com/package/react-native-qqsdk)
 [![platform](https://img.shields.io/badge/platform-iOS%2FAndroid-lightgrey.svg?style=flat)](https://github.com/iVanPan/react-native-qqsdk)
 [![GitHub license](https://img.shields.io/github/license/mashape/apistatus.svg?style=flat)](https://github.com/iVanPan/react-native-qqsdk/blob/master/LICENSE)
 [![Contact](https://img.shields.io/badge/contact-Van-green.svg?style=flat)](http://VanPan.me)                  
