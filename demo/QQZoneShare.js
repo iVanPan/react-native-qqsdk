@@ -88,7 +88,7 @@ export default class QQZoneShare extends Component {
   }
 
   shareNews() {
-    const newsUrl = 'ttps://facebook.github.io/react-native/';
+    const newsUrl = 'https://facebook.github.io/react-native/';
     QQ.shareNews(newsUrl, resolveAssetSource(require('./news.jpg')).uri, '分享新闻的标题', '分享新闻的描述', QQ.shareScene.QQZone)
       .then((result) => {
         Alert.alert('QQZone分享结果', ' ' + result);
