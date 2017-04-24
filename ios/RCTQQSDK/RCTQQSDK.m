@@ -87,6 +87,7 @@ RCT_EXPORT_METHOD(ssoLogin
                                         kOPEN_PERMISSION_GET_VIP_INFO,
                                         kOPEN_PERMISSION_GET_VIP_RICH_INFO,
                                         nil];
+    [tencentOAuth setAuthShareType:AuthShareType_QQ];
     [tencentOAuth authorize:permissions];
 }
 
@@ -205,6 +206,7 @@ RCT_EXPORT_METHOD(shareVideo:(NSString *)previewUrl
             NSString *msg = [shareData objectForKey:@"text"];
             QQApiTextObject *txtObj = [QQApiTextObject objectWithText:msg];
             [txtObj setCflag:kQQAPICtrlFlagQZoneShareOnStart];
+            txtObj.shareDestType = ShareDestTypeQQ;
             switch (scene) {
                 case QQZone:
                     [self shareTextToQQZone:msg];
@@ -228,6 +230,7 @@ RCT_EXPORT_METHOD(shareVideo:(NSString *)previewUrl
                                                        previewImageData:data
                                                                   title:title
                                                             description:description];
+            imgObj.shareDestType = ShareDestTypeQQ;
             switch (scene) {
                 case QQZone:
                     [imgObj setCflag:kQQAPICtrlFlagQZoneShareOnStart];
@@ -252,6 +255,7 @@ RCT_EXPORT_METHOD(shareVideo:(NSString *)previewUrl
                                                                 title:title
                                                           description:description
                                                      previewImageData:data];
+            newsObj.shareDestType = ShareDestTypeQQ;
             switch (scene) {
                 case QQZone:
                     [newsObj setCflag:kQQAPICtrlFlagQZoneShareOnStart];
@@ -278,6 +282,7 @@ RCT_EXPORT_METHOD(shareVideo:(NSString *)previewUrl
                                                              description:description
                                                         previewImageData:data];
             [audioObj setFlashURL:flashUrl];
+            audioObj.shareDestType = ShareDestTypeQQ;
             switch (scene) {
                 case QQZone:
                     [audioObj setCflag:kQQAPICtrlFlagQZoneShareOnStart];
@@ -304,6 +309,7 @@ RCT_EXPORT_METHOD(shareVideo:(NSString *)previewUrl
                                                              description:description
                                                         previewImageData:data];
             [videoObj setFlashURL:flashUrl];
+            videoObj.shareDestType = ShareDestTypeQQ;
             switch (scene) {
                 case QQZone:
                     [videoObj setCflag:kQQAPICtrlFlagQZoneShareOnStart];
@@ -332,7 +338,7 @@ RCT_EXPORT_METHOD(shareVideo:(NSString *)previewUrl
             break;
         case EQQAPIAPPNOTREGISTED: {
             if (shareReject) {
-                shareReject(@"500", @"App未注册", nil);
+                shareReject(@"500", @"App 未注册", nil);
                 shareReject = nil;
                 shareResolve = nil;
             }
@@ -348,9 +354,17 @@ RCT_EXPORT_METHOD(shareVideo:(NSString *)previewUrl
             }
             break;
         }
+        case EQQAPITIMNOTINSTALLED: {
+            if (shareReject) {
+                shareReject(@"500", @"没有安装 TIM", nil);
+                shareReject = nil;
+                shareResolve = nil;
+            }
+            break;
+        }
         case EQQAPIQQNOTINSTALLED: {
             if (shareReject) {
-                shareReject(@"500", @"没有安装手机QQ", nil);
+                shareReject(@"500", @"没有安装手机 QQ", nil);
                 shareReject = nil;
                 shareResolve = nil;
             }
@@ -358,7 +372,7 @@ RCT_EXPORT_METHOD(shareVideo:(NSString *)previewUrl
         }
         case EQQAPIQQNOTSUPPORTAPI: {
             if (shareReject) {
-                shareReject(@"500", @"API接口不支持", nil);
+                shareReject(@"500", @"API 接口不支持", nil);
                 shareReject = nil;
                 shareResolve = nil;
             }
@@ -372,9 +386,17 @@ RCT_EXPORT_METHOD(shareVideo:(NSString *)previewUrl
             }
             break;
         }
+        case ETIMAPIVERSIONNEEDUPDATE: {
+            if (shareReject) {
+                shareReject(@"500", @"当前 TIM 版本太低", nil);
+                shareReject = nil;
+                shareResolve = nil;
+            }
+            break;
+        }
         case EQQAPIVERSIONNEEDUPDATE: {
             if (shareReject) {
-                shareReject(@"500", @"当前QQ版本太低", nil);
+                shareReject(@"500", @"当前 QQ 版本太低", nil);
                 shareReject = nil;
                 shareResolve = nil;
             }
@@ -382,7 +404,7 @@ RCT_EXPORT_METHOD(shareVideo:(NSString *)previewUrl
         }
         case EQQAPIQZONENOTSUPPORTTEXT: {
             if (shareReject) {
-                shareReject(@"500", @"QQZone不支持QQApiTextObject分享", nil);
+                shareReject(@"500", @"QQZone 不支持 QQApiTextObject 分享", nil);
                 shareReject = nil;
                 shareResolve = nil;
             }
@@ -390,7 +412,15 @@ RCT_EXPORT_METHOD(shareVideo:(NSString *)previewUrl
         }
         case EQQAPIQZONENOTSUPPORTIMAGE: {
             if (shareReject) {
-                shareReject(@"500", @"QQZone不支持QQApiImageObject分享", nil);
+                shareReject(@"500", @"QQZone 不支持 QQApiImageObject 分享", nil);
+                shareReject = nil;
+                shareResolve = nil;
+            }
+            break;
+        }
+        case EQQAPISHAREDESTUNKNOWN: {
+            if (shareReject) {
+                shareReject(@"500", @"未指定分享到 QQ 或 TIM", nil);
                 shareReject = nil;
                 shareResolve = nil;
             }
