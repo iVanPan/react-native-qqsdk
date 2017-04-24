@@ -109,10 +109,11 @@ npm install --save react-native-qqsdk@latest
 
     ```gradle
     ...
-  manifestPlaceholders = [
-           QQ_APP_ID: ${QQ_APP_ID}, //在此替换你的APPKey
-    ]
+    manifestPlaceholders = [            
+             QQ_APP_ID: ${QQ_APP_ID}, //在此替换你的APPKey          
+    ]     
     ```
+        
 4.Update the `MainApplication.java` file to use react-native-qqsdk via the following changes:
 
 ```java
@@ -173,70 +174,70 @@ public class MainApplication extends Application implements ReactApplication {
  
 ### Usage
 ##### checkClientInstalled
-  ```js
-import * as QQ from "react-native-qqsdk";
+```js
+import * as QQ from 'react-native-qqsdk';
 QQ.isQQClientInstalled()
   .then(()=>{console.log('Installed')})
   .catch(()=>{console.log('not installed')});
 
-  ```
+```
 ##### ssoLogin
-  ```js
-import * as QQ from "react-native-qqsdk";
+```js
+import * as QQ from 'react-native-qqsdk';
 QQ.ssoLogin()
   .then((result)=>{'result is', result})
   .catch((error)=>{console.log('error is', error)});
 
-  ```
+```
 ##### logout
-  ```js
-import * as QQ from "react-native-qqsdk";
+```js
+import * as QQ from 'react-native-qqsdk';
 QQ.logout()
   .then((result)=>{'result is', result})
   .catch((error)=>{console.log('error is', error)});
 
-  ```
+```
 ##### shareText
-  ```js
-import * as QQ from "react-native-qqsdk";
-QQ.shareText("分享文字",QQ.shareScene.QQ)
+```js
+import * as QQ from 'react-native-qqsdk';
+QQ.shareText('分享文字',QQ.shareScene.QQ)
   .then((result)=>{console.log('result is', result)})
   .catch((error)=>{console.log('error is', error)});
 
-  ```
+```
 ##### shareImage
-  ```js
-import * as QQ from "react-native-qqsdk";
-const imgUrl = "https://y.gtimg.cn/music/photo_new/T001R300x300M000003Nz2So3XXYek.jpg";
+```js
+import * as QQ from 'react-native-qqsdk';
+const imgUrl = 'https://y.gtimg.cn/music/photo_new/T001R300x300M000003Nz2So3XXYek.jpg';
 QQ.shareImage(imgUrl,'分享标题','分享描述',QQ.shareScene.QQ)
   .then((result)=>{console.log('result is', result)})
   .catch((error)=>{console.log('error is', error)});
 
-  ```
+```
 ##### shareNews
-  ```js
-import * as QQ from "react-native-qqsdk";
+```js
+import * as QQ from 'react-native-qqsdk';
 import resolveAssetSource from 'resolveAssetSource';
 QQ.shareNews('https://facebook.github.io/react-native/',resolveAssetSource(require('./news.jpg')).uri,'分享新闻标题','分享新闻描述',QQ.shareScene.QQ)
 .then((result)=>{console.log('result is', result)})
 .catch((error)=>{console.log('error is', error)});
 
-  ```
+```
 ##### shareAudio
-  ```js
-import * as QQ from "react-native-qqsdk";
-const audioPreviewUrl = "https://y.qq.com/portal/song/001OyHbk2MSIi4.html";
-const audioUrl = "http://stream20.qqmusic.qq.com/30577158.mp3";
-const imgUrl = "https://y.gtimg.cn/music/photo_new/T001R300x300M000003Nz2So3XXYek.jpg";
+```js
+import * as QQ from 'react-native-qqsdk';
+const audioPreviewUrl = 'https://y.qq.com/portal/song/001OyHbk2MSIi4.html';
+const audioUrl = 'http://stream20.qqmusic.qq.com/30577158.mp3';
+const imgUrl = 'https://y.gtimg.cn/music/photo_new/T001R300x300M000003Nz2So3XXYek.jpg';
 QQ.shareAudio(audioPreviewUrl,audioUrl,imgUrl,'十年','陈奕迅',QQ.shareScene.QQ)
 .then((result)=>{console.log('result is', result)})
 .catch((error)=>{console.log('error is', error)});
 
-  ```
+ ```
 
 ##### getUserInfo
 ```js
-var url = "https://graph.qq.com/user/get_user_info?access_token=" + accessToken + "&oauth_consumer_key= APPID &openid=" + userId;
+var url = 'https://graph.qq.com/user/get_user_info?access_token=' + accessToken + '&oauth_consumer_key= APPID &openid=' + userId;
 http.get(url)
 ```
 
