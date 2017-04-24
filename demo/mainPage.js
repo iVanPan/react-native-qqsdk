@@ -1,19 +1,15 @@
 import React, { Component } from 'react';
 import {
-  AppRegistry,
   StyleSheet,
-  Text,
   ScrollView,
   Alert,
   Dimensions,
   Button,
   Navigator,
-  StatusBar,
   View
 } from 'react-native';
-import * as QQ from "react-native-qqsdk";
+import * as QQ from 'react-native-qqsdk';
 import NavigationBar from './navigationBar';
-import resolveAssetSource from 'resolveAssetSource';
 import QQShare from './QQShare';
 import QQZone from './QQZoneShare';
 import Favorite from './QQFavorite';
@@ -74,7 +70,7 @@ export default class MainPage extends Component {
   }
   checkClient() {
     QQ.isQQClientInstalled()
-    .then(()=>{
+      .then(()=>{
       Alert.alert('检查客户端是否安装结果','Intsalled');
     }).catch((error)=>{
       Alert.alert('检查客户端是否安装结果',''+error);
@@ -82,7 +78,7 @@ export default class MainPage extends Component {
   }
   Login() {
     QQ.ssoLogin()
-    .then((result)=>{
+      .then((result)=>{
       Alert.alert('QQ登录结果','userid is '+result.userid+'\n token is '+result.access_token+'\n expires_time is '+ new Date(parseInt(result.expires_time)));
     }).catch((error)=>{
       Alert.alert('QQ登录结果',''+error);

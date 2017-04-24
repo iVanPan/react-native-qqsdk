@@ -13,6 +13,7 @@ export default class Navigation extends Component {
   static propTypes = {
     initialRoute: PropTypes.object.isRequired,
   };
+
   componentDidMount() {
     if (Platform.OS === 'android') {
       BackAndroid.addEventListener('hardwareBackPress', () => {
@@ -25,15 +26,18 @@ export default class Navigation extends Component {
       });
     }
   }
+
   componentWillUnmount() {
     BackAndroid.removeEventListener('hardwareBackPress');
   }
+
   configureScene(route) {
     if (route.sceneConfig) {
       return route.sceneConfig;
     }
     return Navigator.SceneConfigs.PushFromRight;
   }
+
   render() {
     return (
       <Navigator
