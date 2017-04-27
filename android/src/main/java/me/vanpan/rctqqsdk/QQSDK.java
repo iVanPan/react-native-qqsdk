@@ -176,7 +176,7 @@ public class QQSDK extends ReactContextBaseJavaModule {
         final Bundle params = new Bundle();
         switch (shareScene) {
             case ShareScene.QQ:
-                promise.reject("500","Android不支持分享文字到QQ");
+                promise.reject("500","Android 不支持分享文字到 QQ");
                 break;
             case ShareScene.Favorite:
                 params.putInt(GameAppOperation.QQFAV_DATALINE_REQTYPE, GameAppOperation.QQFAV_DATALINE_TYPE_TEXT);
@@ -426,10 +426,10 @@ public class QQSDK extends ReactContextBaseJavaModule {
         final Bundle params = new Bundle();
         switch (shareScene) {
             case ShareScene.QQ:
-                promise.reject("500","Android不支持分享视频到QQ");
+                promise.reject("500","Android 不支持分享视频到 QQ");
                 break;
             case ShareScene.Favorite:
-                promise.reject("500","Android不支持收藏视频到QQ");
+                promise.reject("500","Android 不支持收藏视频到 QQ");
                 break;
             case ShareScene.QQZone:
                 ArrayList<String> imageUrls = new ArrayList<String>();
