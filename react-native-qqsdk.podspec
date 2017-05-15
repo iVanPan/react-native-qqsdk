@@ -15,6 +15,7 @@ Pod::Spec.new do |s|
 
   s.preserve_paths = 'README.md', 'LICENSE', 'package.json', 'index.js'
   s.source_files   = "ios/RCTQQSDK/*.{h,m}"
-
+  s.xcconfig = { 'FRAMEWORK_SEARCH_PATHS' => '$(SRCROOT)/../WebankApp/Classes/Lib/QQ' }
+  
   s.dependency 'React'
 end
