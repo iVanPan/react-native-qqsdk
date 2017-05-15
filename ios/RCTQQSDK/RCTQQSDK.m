@@ -227,7 +227,7 @@ RCT_EXPORT_METHOD(shareVideo:(NSString *)previewUrl
             NSString *title = [shareData objectForKey:@"title"];
             NSString *description = [shareData objectForKey:@"description"];
             QQApiImageObject *imgObj = [QQApiImageObject objectWithData:data
-                                                       previewImageData:data
+                                                       previewImageData:nil
                                                                   title:title
                                                             description:description];
             imgObj.shareDestType = ShareDestTypeQQ;
