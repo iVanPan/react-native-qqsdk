@@ -15,6 +15,7 @@ Pod::Spec.new do |s|
 
   s.preserve_paths = 'README.md', 'LICENSE', 'package.json', 'index.js'
   s.source_files   = "ios/RCTQQSDK/*.{h,m}"
+  # If you have use qqsdk in your project, choose the newest one and set this path to the container dir
   s.xcconfig = { 'FRAMEWORK_SEARCH_PATHS' => 'ios/RCTQQSDK' }
   
   s.dependency 'React'
