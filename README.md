@@ -53,25 +53,25 @@ npm install --save react-native-qqsdk@latest
  react-native link react-native-qqsdk
 ```
 ### CocoaPods
-1. install package from npm
+1. Install package from npm
 ```shell
 npm install --save react-native-qqsdk@latest
 ```
-2. create a Podfile
-3. add pod in Podfile something similar to this:
+2. Create a Podfile
+3. Add pod in Podfile something similar to this:
 ```shell
-  pod 'React', :path => '../node_modules/react-native', :subspecs => [
-    'Core',
-    'RCTText',
-    'RCTNetwork',
-    'RCTWebSocket', # needed for debugging
-    # Add any other subspecs you want to use in your project
-  ]
-  pod "Yoga", :path => "../node_modules/react-native/ReactCommon/yoga"
-  pod "react-native-qqsdk", :path => "../node_modules/react-native-qqsdk"
+pod 'React', :path => '../node_modules/react-native', :subspecs => [
+  'Core',
+  'RCTText',
+  'RCTNetwork',
+  'RCTWebSocket', # needed for debugging
+  # Add any other subspecs you want to use in your project
+]
+pod "Yoga", :path => "../node_modules/react-native/ReactCommon/yoga"
+pod "react-native-qqsdk", :path => "../node_modules/react-native-qqsdk"
 ```
-4. pod install
-5. follow step 7,8,9 in iOS Setup
+4. Pod install
+5. Follow step 7,8,9 in iOS Setup
 
 ### Manual
 ```shell
