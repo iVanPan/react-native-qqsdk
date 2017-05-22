@@ -13,6 +13,7 @@ A React Native wrapper around the Tencent QQ SDK for Android and iOS. Provides a
 - [Feature](#feature)
 - [Installation](#installation)
   - [RNPM](#rnpm)
+  - [CocoaPods](#cocoapods)
   - [Manual](#manual)
     - [iOS Setup](#ios-setup)
     - [Android Setup](#android-setup)
@@ -51,6 +52,27 @@ npm install --save react-native-qqsdk@latest
 ```
  react-native link react-native-qqsdk
 ```
+### CocoaPods
+1. install package from npm
+```shell
+npm install --save react-native-qqsdk@latest
+```
+2. create a Podfile
+3. add pod in Podfile something similar to this:
+```shell
+  pod 'React', :path => '../node_modules/react-native', :subspecs => [
+    'Core',
+    'RCTText',
+    'RCTNetwork',
+    'RCTWebSocket', # needed for debugging
+    # Add any other subspecs you want to use in your project
+  ]
+  pod "Yoga", :path => "../node_modules/react-native/ReactCommon/yoga"
+  pod "react-native-qqsdk", :path => "../node_modules/react-native-qqsdk"
+```
+4. pod install
+5. follow step 7,8,9 in iOS Setup
+
 ### Manual
 ```shell
 npm install --save react-native-qqsdk@latest
