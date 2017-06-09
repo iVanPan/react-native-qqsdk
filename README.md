@@ -62,10 +62,13 @@ npm install --save react-native-qqsdk@latest
 ```shell
 pod 'React', :path => '../node_modules/react-native', :subspecs => [
   'Core',
+  'CxxBridge',
   'RCTText',
   'RCTNetwork',
+  'RCTImage',
   'RCTWebSocket', # needed for debugging
-  # Add any other subspecs you want to use in your project
+   # Add any other subspecs you want to use in your project
+  'DevSupport'
 ]
 pod "Yoga", :path => "../node_modules/react-native/ReactCommon/yoga"
 pod "react-native-qqsdk", :path => "../node_modules/react-native-qqsdk"
