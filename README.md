@@ -129,7 +129,7 @@ npm install --save react-native-qqsdk@latest
         compile project(':react-native-qqsdk')
     }
     ```
-3. add App ID to `$RNProjectRoot/package.json` which locate in react-native-qqsdk node_modules folder
+3. add App ID to `$RNProjectRoot/package.json`
 
     ``` json
     {
