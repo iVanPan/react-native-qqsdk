@@ -19,7 +19,10 @@ out/
 
 # Gradle files
 .gradle/
+gradle/
 build/
+gradlew
+gradlew.bat
 
 # Local configuration file (sdk path, etc)
 local.properties
@@ -41,6 +44,7 @@ captures/
 .idea/workspace.xml
 .idea/tasks.xml
 .idea/libraries
+.idea/
 
 # Keystore files
 *.jks
