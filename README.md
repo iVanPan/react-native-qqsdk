@@ -133,7 +133,6 @@ npm install --save react-native-qqsdk@latest
 
 ``` json
 {
-  ... // other package.json config
   "qq_app_id": "YOUR_QQ_APP_ID"
 }
 ```
