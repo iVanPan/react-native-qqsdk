@@ -7,7 +7,7 @@ def computeVersionName() {
     return json.version
 }
 def computeQQAppId() {
-    // dynamically retrieve version from package.json
+    // dynamically retrieve qq app id from package.json
     def slurper = new JsonSlurper()
     def json = slurper.parse(file('../../../package.json'), "utf-8")
     return json.qq_app_id
