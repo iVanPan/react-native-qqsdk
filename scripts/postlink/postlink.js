@@ -105,7 +105,7 @@ function addURLTypesForTencentSDK() {
       plistContents = plist.build(parsedInfoPlist);
       fs.writeFileSync(plistPath, plistContents);
     }).then(function(){
-      addAppIdToGradle()
+      addAppIdToPackageJson()
     });
   }
 }
@@ -198,4 +198,19 @@ function addSearchPaths(project, frameworkSearchPath) {
     }
   });
 };
+
+function addAppIdToPackageJson() {
+  var packagePath =path.join(__dirname,'../../../','../','./package.json');
+  var packageFile = fs.readFileSync(packagePath, "utf8");
+  inquirer.prompt([{
+    type: "input",
+    name: "AppID",
+    message: "What is your Tencent SDK AppID for Android (hit <ENTER> to ignore)"
+  }]).then(function(answer) {
+    var key = answer.AppID || "app-id-here";
+    package.qq_app_id=key 
+    fs.writeFileSync(packagePath, JSON.stringify(package,null, 2));
+  });
+}
+
 

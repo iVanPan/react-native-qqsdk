@@ -32,7 +32,7 @@ removeLinkFunction();
 removeAppID();
 removeQueriesSchemes();
 removeFrameworkAndSearchPath();
-
+removeAppIdFromPackageJson();
 
 function removeRCTLinkManagerHeader() {
   var linkHeaderImportStatement = `#import <React/RCTLinkingManager.h>`;
@@ -144,4 +144,10 @@ function removeSearchPaths(project, frameworkSearchPath) {
       }
     }
   });
+}
+function removeAppIdFromPackageJson() {
+  var packagePath =path.join(__dirname,'../../../','../','./package.json');
+  var packageFile = fs.readFileSync(packagePath, "utf8");
+   delete package.qq_app_id
+  fs.writeFileSync(packagePath, JSON.stringify(package, null, 2));
 }
