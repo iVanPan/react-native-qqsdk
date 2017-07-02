@@ -1,6 +1,6 @@
 {
   "name": "react-native-qqsdk",
-  "version": "0.8.1",
+  "version": "0.8.0",
   "description": "react-native wrapper for qq sdk",
   "main": "index.js",
   "scripts": {
