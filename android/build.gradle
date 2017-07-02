@@ -6,6 +6,12 @@ def computeVersionName() {
     def json = slurper.parse(file('../../../package.json'), "utf-8")
     return json.version
 }
+def computeQQAppId() {
+    // dynamically retrieve qq app id from package.json
+    def slurper = new JsonSlurper()
+    def json = slurper.parse(file('../../../package.json'), "utf-8")
+    return json.qq_app_id
+}
 apply plugin: 'com.android.library'
 
 android {
@@ -18,7 +24,7 @@ android {
         versionCode 1
         versionName computeVersionName()
         manifestPlaceholders = [
-                QQ_APP_ID: ${QQ_APP_ID}, //在此替换你的APPKey
+                QQ_APP_ID: computeQQAppId()
         ]
     }
     sourceSets.main {

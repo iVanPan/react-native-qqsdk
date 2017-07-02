@@ -129,14 +129,13 @@ npm install --save react-native-qqsdk@latest
         compile project(':react-native-qqsdk')
     }
     ```
-3. add App ID to `android/app/build.gradle` which locate in react-native-qqsdk node_modules folder
+3. add App ID to `$RNProjectRoot/package.json`
 
-    ```gradle
-    ...
-    manifestPlaceholders = [            
-             QQ_APP_ID: ${QQ_APP_ID}, //在此替换你的APPKey          
-    ]     
-    ```
+``` json
+{
+  "qq_app_id": "YOUR_QQ_APP_ID"
+}
+```
         
 4.Update the `MainApplication.java` file to use react-native-qqsdk via the following changes:
 
