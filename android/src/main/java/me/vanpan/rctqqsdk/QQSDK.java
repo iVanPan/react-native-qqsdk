@@ -220,7 +220,7 @@ public class QQSDK extends ReactContextBaseJavaModule {
             promise.reject("405",ACTIVITY_DOES_NOT_EXIST);
             return;
         }
-
+        mPromise = promise;
         image = processImage(image);
         final Bundle params = new Bundle();
         switch (shareScene) {
