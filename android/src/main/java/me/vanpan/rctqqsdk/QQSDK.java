@@ -503,7 +503,7 @@ public class QQSDK extends ReactContextBaseJavaModule {
      */
     private String processImage(String image) {
         if(URLUtil.isHttpUrl(image) || URLUtil.isHttpsUrl(image)) {
-            return saveBytesToFile(getBytesFromURL(image), image.contains(".gif") ? "gif" : "jpg");
+            return saveBytesToFile(getBytesFromURL(image), image.toLowerCase().contains(".gif") ? "gif" : "jpg");
         } else if (isBase64(image)) {
             return saveBitmapToFile(decodeBase64ToBitmap(image));
         } else if (URLUtil.isFileUrl(image) || image.startsWith("/") ){
