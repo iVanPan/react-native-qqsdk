@@ -12,6 +12,7 @@ import android.text.TextUtils;
 import android.util.Base64;
 import android.util.Log;
 
+import android.webkit.MimeTypeMap;
 import android.webkit.URLUtil;
 import com.facebook.react.bridge.ActivityEventListener;
 import com.facebook.react.bridge.Arguments;
@@ -165,7 +166,7 @@ public class QQSDK extends ReactContextBaseJavaModule {
         };
         UiThreadUtil.runOnUiThread(runnable);
     }
-    
+
     @ReactMethod
     public void shareText(String text,int shareScene, final Promise promise) {
         final Activity currentActivity = getCurrentActivity();
@@ -503,7 +504,7 @@ public class QQSDK extends ReactContextBaseJavaModule {
      */
     private String processImage(String image) {
         if(URLUtil.isHttpUrl(image) || URLUtil.isHttpsUrl(image)) {
-            return saveBytesToFile(getBytesFromURL(image), image.toLowerCase().contains(".gif") ? "gif" : "jpg");
+            return saveBytesToFile(getBytesFromURL(image), getExtension(image));
         } else if (isBase64(image)) {
             return saveBitmapToFile(decodeBase64ToBitmap(image));
         } else if (URLUtil.isFileUrl(image) || image.startsWith("/") ){
@@ -585,11 +586,29 @@ public class QQSDK extends ReactContextBaseJavaModule {
     }
 
     /**
+     * 获取链接指向文件后缀
+     *
+     * @param src
+     * @return
+     */
+    public static String getExtension(String src) {
+        String extension = null;
+        try {
+            URL url = new URL(src);
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            String contentType = connection.getContentType();
+            extension = MimeTypeMap.getSingleton().getExtensionFromMimeType(contentType);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return extension;
+    }
+
+    /**
      * 将Base64解码成Bitmap
      * @param Base64String
      * @return
      */
-
     private Bitmap decodeBase64ToBitmap(String Base64String) {
         byte[] decode = Base64.decode(Base64String,Base64.DEFAULT);
         Bitmap bitmap = BitmapFactory.decodeByteArray(decode, 0, decode.length);
