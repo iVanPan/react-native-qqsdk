@@ -34,6 +34,7 @@ import com.tencent.tauth.UiError;
 
 import org.json.JSONObject;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -218,7 +219,7 @@ public class QQSDK extends ReactContextBaseJavaModule {
             promise.reject("405",ACTIVITY_DOES_NOT_EXIST);
             return;
         }
-        mPromise = promise;
+
         image = processImage(image);
         final Bundle params = new Bundle();
         switch (shareScene) {
@@ -502,7 +503,7 @@ public class QQSDK extends ReactContextBaseJavaModule {
      */
     private String processImage(String image) {
         if(URLUtil.isHttpUrl(image) || URLUtil.isHttpsUrl(image)) {
-            return saveBitmapToFile(getBitmapFromURL(image));
+            return saveBytesToFile(getBytesFromURL(image), image.toLowerCase().contains(".gif") ? "gif" : "jpg");
         } else if (isBase64(image)) {
             return saveBitmapToFile(decodeBase64ToBitmap(image));
         } else if (URLUtil.isFileUrl(image) || image.startsWith("/") ){
@@ -564,6 +565,26 @@ public class QQSDK extends ReactContextBaseJavaModule {
     }
 
     /**
+     * 根据图片的URL转化成 byte[]
+     * @param src
+     * @return
+     */
+    private static byte[] getBytesFromURL(String src) {
+        try {
+            URL url = new URL(src);
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            connection.setDoInput(true);
+            connection.connect();
+            InputStream input = connection.getInputStream();
+            byte[] b = getBytes(input);
+            return b;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    /**
      * 将Base64解码成Bitmap
      * @param Base64String
      * @return
@@ -614,10 +635,47 @@ public class QQSDK extends ReactContextBaseJavaModule {
     }
 
     /**
+     * 将 byte[] 保存成文件
+     * @param bytes 图片内容
+     * @return
+     */
+    private String saveBytesToFile(byte[] bytes) {
+        return saveBytesToFile(bytes, "jpg");
+    }
+
+    /**
+     * 将 byte[] 保存成文件
+     * @param bytes 图片内容
+     * @param ext 扩展名
+     * @return
+     */
+    private String saveBytesToFile(byte[] bytes, String ext) {
+        File pictureFile = getOutputMediaFile(ext);
+        if (pictureFile == null) {
+            return null;
+        }
+        try {
+            FileOutputStream fos = new FileOutputStream(pictureFile);
+            fos.write(bytes);
+            fos.close();
+        } catch (FileNotFoundException e) {
+            Log.d(TAG, "File not found: " + e.getMessage());
+        } catch (IOException e) {
+            Log.d(TAG, "Error accessing file: " + e.getMessage());
+        }
+        return pictureFile.getAbsolutePath();
+    }
+
+    /**
      * 生成文件用来存储图片
      * @return
      */
     private File getOutputMediaFile(){
+        return getOutputMediaFile("jpg");
+    }
+
+    private File getOutputMediaFile(String ext){
+        ext = ext != null ? ext : "jpg";
         File mediaStorageDir = getCurrentActivity().getExternalCacheDir();
         if (! mediaStorageDir.exists()){
             if (! mediaStorageDir.mkdirs()){
@@ -626,7 +684,7 @@ public class QQSDK extends ReactContextBaseJavaModule {
         }
         String timeStamp = new SimpleDateFormat("ddMMyyyy_HHmm").format(new Date());
         File mediaFile;
-        String mImageName="RN_"+ timeStamp +".jpg";
+        String mImageName="RN_"+ timeStamp +"." + ext;
         mediaFile = new File(mediaStorageDir.getPath() + File.separator + mImageName);
         Log.d("path is",mediaFile.getPath());
         return mediaFile;
@@ -747,4 +805,16 @@ public class QQSDK extends ReactContextBaseJavaModule {
             mPromise.reject("500",e.errorMessage);
         }
     };
+
+    private static byte[] getBytes(InputStream inputStream) throws Exception {
+        byte[] b = new byte[1024];
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+        int len = -1;
+        while ((len = inputStream.read(b)) != -1) {
+            byteArrayOutputStream.write(b, 0, len);
+        }
+        byteArrayOutputStream.close();
+        inputStream.close();
+        return byteArrayOutputStream.toByteArray();
+    }
 }
