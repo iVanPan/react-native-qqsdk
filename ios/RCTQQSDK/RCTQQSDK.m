@@ -194,7 +194,7 @@ RCT_EXPORT_METHOD(shareVideo:(NSString *)previewUrl
 }
 
 - (void)shareTextToQQZone:(NSString *)text {
-    QQApiImageArrayForQZoneObject *txtObj = [QQApiImageArrayForQZoneObject objectWithimageDataArray:nil title:text];
+    QQApiImageArrayForQZoneObject *txtObj = [QQApiImageArrayForQZoneObject objectWithimageDataArray:nil title:text extMap:nil];
     SendMessageToQQReq *req = [SendMessageToQQReq reqWithContent:txtObj];
     QQApiSendResultCode sent = [QQApiInterface SendReqToQZone:req];
     [self handleSendResult:sent];
