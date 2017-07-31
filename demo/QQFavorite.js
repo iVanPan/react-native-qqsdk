@@ -5,10 +5,10 @@ import {
   Alert,
   Dimensions,
   Button,
-  Navigator,
   CameraRoll,
   View
 } from 'react-native';
+import {Navigator} from 'react-native-deprecated-custom-components';
 import * as QQ from 'react-native-qqsdk';
 import NavigationBar from './navigationBar';
 import resolveAssetSource from 'resolveAssetSource';

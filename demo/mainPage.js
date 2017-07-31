@@ -5,9 +5,9 @@ import {
   Alert,
   Dimensions,
   Button,
-  Navigator,
   View
 } from 'react-native';
+import {Navigator} from 'react-native-deprecated-custom-components';
 import * as QQ from 'react-native-qqsdk';
 import NavigationBar from './navigationBar';
 import QQShare from './QQShare';

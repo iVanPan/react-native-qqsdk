@@ -3,11 +3,10 @@ import React, {
   PropTypes,
 } from 'react';
 import {
-  Navigator,
   Platform,
   BackAndroid,
 } from 'react-native';
-
+import {Navigator} from 'react-native-deprecated-custom-components';
 let _navigator;
 export default class Navigation extends Component {
   static propTypes = {
