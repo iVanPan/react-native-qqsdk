@@ -183,8 +183,8 @@ public class MainApplication extends Application implements ReactApplication {
 |-------------|----------------------------------------------------------------------|
 |      404    |                        QQ client not found                           |
 |      405    |                        Android Activity not found                    |
-|      500    |             QQ share (QQSDKPackage,QQZone QQ Favorite) error         |
-|      503    |             QQ share (QQSDKPackage,QQZone QQ Favorite) cancelled     |
+|      500    |             QQ share (QQZone, QQ, Favorite) error         |
+|      503    |             QQ share (QQZone, QQ, Favorite) cancelled     |
 |      600    |                        QQ ssoLogin error                             |
 |      603    |                        ssoLogin cancelled                            |
 
