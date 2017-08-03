@@ -715,7 +715,7 @@ public class QQSDK extends ReactContextBaseJavaModule {
      *
      * @param jsonObject
      */
-    public static void initOpenidAndToken(JSONObject jsonObject) {
+    public static boolean initOpenidAndToken(JSONObject jsonObject) {
         try {
             String token = jsonObject.getString(Constants.PARAM_ACCESS_TOKEN);
             String expires = jsonObject.getString(Constants.PARAM_EXPIRES_IN);
@@ -724,9 +724,11 @@ public class QQSDK extends ReactContextBaseJavaModule {
                 && !TextUtils.isEmpty(openId)) {
                 mTencent.setAccessToken(token, expires);
                 mTencent.setOpenId(openId);
+                return true;
             }
         } catch (Exception e) {
         }
+        return false;
     }
 
     /**
@@ -740,17 +742,19 @@ public class QQSDK extends ReactContextBaseJavaModule {
                 return;
             }
             JSONObject jsonResponse = (JSONObject) response;
-            if (null != jsonResponse && jsonResponse.length() == 0) {
+            if (jsonResponse.length() == 0) {
                 mPromise.reject("600",QQ_RESPONSE_ERROR);
                 return;
             }
-            initOpenidAndToken(jsonResponse);
-            WritableMap map = Arguments.createMap();
-            map.putString("userid", mTencent.getOpenId());
-            map.putString("access_token", mTencent.getAccessToken());
-            map.putDouble("expires_time", mTencent.getExpiresIn());
-            mPromise.resolve(map);
-
+            if (initOpenidAndToken(jsonResponse)) {
+                WritableMap map = Arguments.createMap();
+                map.putString("userid", mTencent.getOpenId());
+                map.putString("access_token", mTencent.getAccessToken());
+                map.putDouble("expires_time", mTencent.getExpiresIn());
+                mPromise.resolve(map);
+            } else {
+                mPromise.reject("600",QQ_RESPONSE_ERROR);
+            }
         }
 
         @Override
