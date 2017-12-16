@@ -503,6 +503,9 @@ public class QQSDK extends ReactContextBaseJavaModule {
      * @return
      */
     private String processImage(String image) {
+        if (TextUtils.isEmpty(image)) {
+            return "";
+        }
         if(URLUtil.isHttpUrl(image) || URLUtil.isHttpsUrl(image)) {
             return saveBytesToFile(getBytesFromURL(image), getExtension(image));
         } else if (isBase64(image)) {
