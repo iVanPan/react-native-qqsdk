@@ -1,6 +1,6 @@
 {
   "name": "react-native-qqsdk",
-  "version": "0.8.1",
+  "version": "0.8.2",
   "description": "react-native wrapper for qq sdk",
   "main": "index.js",
   "scripts": {
@@ -30,12 +30,12 @@
     "favorites"
   ],
   "dependencies": {
-    "glob": "5.0.15",
+    "glob": "^5.0.15",
     "inquirer": "1.1.2",
     "plist": "1.2.0",
     "lodash": "4.17.2",
-    "xcode": "0.8.9",
-    "path": "0.12.7"
+    "xcode": "^1.0.0",
+    "path": "^0.12.7"
   },
   "peerDependencies": {
     "react-native": ">=0.40"
