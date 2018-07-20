@@ -208,7 +208,7 @@ QQ.isQQClientInstalled()
 ```js
 import * as QQ from 'react-native-qqsdk';
 QQ.ssoLogin()
-  .then((result)=>{'result is', result})
+  .then((result)=>{console.log('result is', result)})
   .catch((error)=>{console.log('error is', error)});
 
 ```
@@ -216,7 +216,7 @@ QQ.ssoLogin()
 ```js
 import * as QQ from 'react-native-qqsdk';
 QQ.logout()
-  .then((result)=>{'result is', result})
+  .then((result)=>{console.log('result is', result)})
   .catch((error)=>{console.log('error is', error)});
 
 ```
