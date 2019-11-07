@@ -12,15 +12,21 @@ def computeQQAppId() {
     def json = slurper.parse(file('../../../package.json'), "utf-8")
     return json.qq_app_id
 }
+
+def safeExtGet(prop, fallback) {
+    rootProject.ext.has(prop) ? rootProject.ext.get(prop) : fallback
+}
+
 apply plugin: 'com.android.library'
 
 android {
-    compileSdkVersion 23
-    buildToolsVersion "25.0.0"
+    compileSdkVersion safeExtGet('compileSdkVersion', 23)
+    buildToolsVersion safeExtGet('buildToolsVersion', '25.0.0')
 
     defaultConfig {
-        minSdkVersion 16
-        targetSdkVersion 24
+        minSdkVersion safeExtGet('minSdkVersion', 16)
+        targetSdkVersion safeExtGet('targetSdkVersion', 24)
+
         versionCode 1
         versionName computeVersionName()
         manifestPlaceholders = [
@@ -36,6 +42,6 @@ repositories {
 }
 
 dependencies {
-    compile "com.facebook.react:react-native:+"
-    compile fileTree(dir: 'libs', include: ['*.jar'])
+    implementation "com.facebook.react:react-native:+"
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
 }
